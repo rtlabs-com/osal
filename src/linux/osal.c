@@ -98,6 +98,7 @@ os_mutex_t * os_mutex_create (void)
    CC_STATIC_ASSERT (_POSIX_THREAD_PRIO_INHERIT > 0);
    pthread_mutexattr_init (&mattr);
    pthread_mutexattr_setprotocol (&mattr, PTHREAD_PRIO_INHERIT);
+   pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_RECURSIVE);
 
    result = pthread_mutex_init (mutex, &mattr);
    if (result != 0)
