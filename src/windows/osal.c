@@ -53,13 +53,8 @@ os_thread_t * os_thread_create (
    void * arg)
 {
    HANDLE handle;
-   handle = CreateThread (
-      NULL,
-      0,
-      (LPTHREAD_START_ROUTINE)entry,
-      (LPVOID)arg,
-      0,
-      NULL);
+   handle =
+      CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)entry, (LPVOID)arg, 0, NULL);
 
    SetThreadPriority (handle, THREAD_PRIORITY_TIME_CRITICAL);
    return handle;
@@ -133,11 +128,7 @@ os_event_t * os_event_create (void)
    return event;
 }
 
-bool os_event_wait (
-   os_event_t * event,
-   uint32_t mask,
-   uint32_t * value,
-   uint32_t time)
+bool os_event_wait (os_event_t * event, uint32_t mask, uint32_t * value, uint32_t time)
 {
    BOOL success = TRUE;
 
@@ -145,8 +136,7 @@ bool os_event_wait (
    while ((event->flags & mask) == 0)
    {
       /* FIXME - decrease timeout if woken early */
-      success =
-         SleepConditionVariableCS (&event->condition, &event->lock, time);
+      success = SleepConditionVariableCS (&event->condition, &event->lock, time);
       if (!success && GetLastError() == ERROR_TIMEOUT)
       {
          break;

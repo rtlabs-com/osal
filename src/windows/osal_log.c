@@ -23,13 +23,22 @@ void os_log (uint8_t type, const char * fmt, ...)
 {
    va_list list;
 
-   switch(LOG_LEVEL_GET (type))
+   switch (LOG_LEVEL_GET (type))
    {
-   case LOG_LEVEL_DEBUG:   printf ("[DEBUG] "); break;
-   case LOG_LEVEL_INFO:    printf ("[INFO ] "); break;
-   case LOG_LEVEL_WARNING: printf ("[WARN ] "); break;
-   case LOG_LEVEL_ERROR:   printf ("[ERROR] "); break;
-   default: break;
+   case LOG_LEVEL_DEBUG:
+      printf ("[DEBUG] ");
+      break;
+   case LOG_LEVEL_INFO:
+      printf ("[INFO ] ");
+      break;
+   case LOG_LEVEL_WARNING:
+      printf ("[WARN ] ");
+      break;
+   case LOG_LEVEL_ERROR:
+      printf ("[ERROR] ");
+      break;
+   default:
+      break;
    }
 
    va_start (list, fmt);

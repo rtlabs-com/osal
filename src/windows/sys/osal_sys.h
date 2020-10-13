@@ -17,8 +17,7 @@
 #define OSAL_SYS_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <windows.h>
@@ -63,7 +62,7 @@ typedef struct os_mbox
 typedef struct os_timer
 {
    HANDLE handle;
-   void(*fn) (struct os_timer *, void * arg);
+   void (*fn) (struct os_timer *, void * arg);
    void * arg;
    uint32_t us;
    bool oneshot;

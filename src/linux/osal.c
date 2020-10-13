@@ -13,7 +13,7 @@
  * full license information.
  ********************************************************************/
 
-#define _GNU_SOURCE             /* For pthread_setname_mp() */
+#define _GNU_SOURCE /* For pthread_setname_mp() */
 
 #include "osal.h"
 /* #include "options.h" */
@@ -98,7 +98,7 @@ os_mutex_t * os_mutex_create (void)
    CC_STATIC_ASSERT (_POSIX_THREAD_PRIO_INHERIT > 0);
    pthread_mutexattr_init (&mattr);
    pthread_mutexattr_setprotocol (&mattr, PTHREAD_PRIO_INHERIT);
-   pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_RECURSIVE);
+   pthread_mutexattr_settype (&mattr, PTHREAD_MUTEX_RECURSIVE);
 
    result = pthread_mutex_init (mutex, &mattr);
    if (result != 0)
@@ -252,11 +252,7 @@ os_event_t * os_event_create (void)
    return event;
 }
 
-bool os_event_wait (
-   os_event_t * event,
-   uint32_t mask,
-   uint32_t * value,
-   uint32_t time)
+bool os_event_wait (os_event_t * event, uint32_t mask, uint32_t * value, uint32_t time)
 {
    struct timespec ts;
    int error     = 0;

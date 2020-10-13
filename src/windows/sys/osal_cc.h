@@ -17,36 +17,35 @@
 #define CC_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <assert.h>
 
-#define CC_PACKED_BEGIN       __pragma(pack(push, 1))
-#define CC_PACKED_END         __pragma(pack(pop))
+#define CC_PACKED_BEGIN __pragma (pack (push, 1))
+#define CC_PACKED_END   __pragma (pack (pop))
 #define CC_PACKED
 
-#define CC_FORMAT(str,arg)
+#define CC_FORMAT(str, arg)
 
-#define CC_TO_LE16(x)         (x)
-#define CC_TO_LE32(x)         (x)
-#define CC_TO_LE64(x)         (x)
-#define CC_FROM_LE16(x)       (x)
-#define CC_FROM_LE32(x)       (x)
-#define CC_FROM_LE64(x)       (x)
-#define CC_TO_BE16(x)         _byteswap_ushort (x)
-#define CC_TO_BE32(x)         _byteswap_ulong (x)
-#define CC_TO_BE64(x)         _byteswap_uint64 (x)
-#define CC_FROM_BE16(x)       _byteswap_ushort (x)
-#define CC_FROM_BE32(x)       _byteswap_ulong (x)
-#define CC_FROM_BE64(x)       _byteswap_uint64 (x)
+#define CC_TO_LE16(x)   (x)
+#define CC_TO_LE32(x)   (x)
+#define CC_TO_LE64(x)   (x)
+#define CC_FROM_LE16(x) (x)
+#define CC_FROM_LE32(x) (x)
+#define CC_FROM_LE64(x) (x)
+#define CC_TO_BE16(x)   _byteswap_ushort (x)
+#define CC_TO_BE32(x)   _byteswap_ulong (x)
+#define CC_TO_BE64(x)   _byteswap_uint64 (x)
+#define CC_FROM_BE16(x) _byteswap_ushort (x)
+#define CC_FROM_BE32(x) _byteswap_ulong (x)
+#define CC_FROM_BE64(x) _byteswap_uint64 (x)
 
 /* TODO */
-#define CC_ATOMIC_GET8(p)     (*p)
-#define CC_ATOMIC_GET16(p)    (*p)
-#define CC_ATOMIC_GET32(p)    (*p)
-#define CC_ATOMIC_GET64(p)    (*p)
+#define CC_ATOMIC_GET8(p)  (*p)
+#define CC_ATOMIC_GET16(p) (*p)
+#define CC_ATOMIC_GET32(p) (*p)
+#define CC_ATOMIC_GET64(p) (*p)
 
 /* TODO */
 #define CC_ATOMIC_SET8(p, v)  ((*p) = (v))
@@ -57,14 +56,14 @@ extern "C"
 static uint8_t __inline cc_ctz (uint32_t x)
 {
    DWORD n = 0;
-   _BitScanForward(&n, x);
+   _BitScanForward (&n, x);
    return (uint8_t)n;
 }
 
 #define __builtin_ctz(x) cc_ctz (x)
 
-#define CC_ASSERT(exp) assert (exp)
-#define CC_STATIC_ASSERT(exp) static_assert ((exp),"")
+#define CC_ASSERT(exp)        assert (exp)
+#define CC_STATIC_ASSERT(exp) static_assert ((exp), "")
 
 #ifdef __cplusplus
 }
