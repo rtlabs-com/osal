@@ -21,20 +21,27 @@
 void os_log (uint8_t type, const char * fmt, ...)
 {
    va_list list;
+   time_t rawtime;
+   struct tm * timestruct;
+   char timestamp[10];
+
+   time (&rawtime);
+   timestruct = localtime (&rawtime);
+   strftime (timestamp, sizeof (timestamp), "%H:%M:%S", timestruct);
 
    switch (LOG_LEVEL_GET (type))
    {
    case LOG_LEVEL_DEBUG:
-      printf ("[DEBUG] ");
+      printf ("[%s DEBUG] ", timestamp);
       break;
    case LOG_LEVEL_INFO:
-      printf ("[INFO ] ");
+      printf ("[%s INFO ] ", timestamp);
       break;
    case LOG_LEVEL_WARNING:
-      printf ("[WARN ] ");
+      printf ("[%s WARN ] ", timestamp);
       break;
    case LOG_LEVEL_ERROR:
-      printf ("[ERROR] ");
+      printf ("[%s ERROR] ", timestamp);
       break;
    default:
       break;
@@ -45,3 +52,4 @@ void os_log (uint8_t type, const char * fmt, ...)
    va_end (list);
    fflush (stdout);
 }
+
