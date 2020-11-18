@@ -60,9 +60,9 @@ extern "C" {
 #define LOG_ERROR(type, ...) LOG ((LOG_LEVEL_ERROR | type), __VA_ARGS__)
 
 #define LOG_DEBUG_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_DEBUG | type)
-#define LOG_INFO_ENABLED(type)    LOG_ENABLED (LOG_LEVEL_DEBUG | type)
-#define LOG_WARNING_ENABLED(type) LOG_ENABLED (LOG_LEVEL_DEBUG | type)
-#define LOG_ERROR_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_DEBUG | type)
+#define LOG_INFO_ENABLED(type)    LOG_ENABLED (LOG_LEVEL_INFO | type)
+#define LOG_WARNING_ENABLED(type) LOG_ENABLED (LOG_LEVEL_WARNING | type)
+#define LOG_ERROR_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_ERROR | type)
 
 void os_log (uint8_t type, const char * fmt, ...) CC_FORMAT (2, 3);
 
