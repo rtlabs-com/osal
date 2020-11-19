@@ -27,7 +27,8 @@ extern "C" {
 #define LOG_LEVEL_INFO    0x01
 #define LOG_LEVEL_WARNING 0x02
 #define LOG_LEVEL_ERROR   0x03
-#define LOG_LEVEL_MASK    0x03
+#define LOG_LEVEL_FATAL   0x04
+#define LOG_LEVEL_MASK    0x07
 #define LOG_LEVEL_GET(t)  (t & LOG_LEVEL_MASK)
 
 /* Log states */
@@ -59,10 +60,14 @@ extern "C" {
 /** Log error messages */
 #define LOG_ERROR(type, ...) LOG ((LOG_LEVEL_ERROR | type), __VA_ARGS__)
 
+/** Log fatal messages */
+#define LOG_FATAL(type, ...) LOG ((LOG_LEVEL_FATAL | type), __VA_ARGS__)
+
 #define LOG_DEBUG_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_DEBUG | type)
 #define LOG_INFO_ENABLED(type)    LOG_ENABLED (LOG_LEVEL_INFO | type)
 #define LOG_WARNING_ENABLED(type) LOG_ENABLED (LOG_LEVEL_WARNING | type)
 #define LOG_ERROR_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_ERROR | type)
+#define LOG_FATAL_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_FATAL | type)
 
 void os_log (uint8_t type, const char * fmt, ...) CC_FORMAT (2, 3);
 

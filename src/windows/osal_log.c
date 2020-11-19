@@ -37,6 +37,9 @@ void os_log (uint8_t type, const char * fmt, ...)
    case LOG_LEVEL_ERROR:
       printf ("[ERROR] ");
       break;
+   case LOG_LEVEL_FATAL:
+      printf ("[FATAL] ");
+      break;
    default:
       break;
    }
