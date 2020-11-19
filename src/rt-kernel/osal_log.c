@@ -38,6 +38,9 @@ void os_log (uint8_t type, const char * fmt, ...)
    case LOG_LEVEL_ERROR:
       rprintf ("%10d [ERROR] ", tick_get());
       break;
+   case LOG_LEVEL_FATAL:
+      rprintf ("%10d [FATAL] ", tick_get());
+      break;
    default:
       break;
    }

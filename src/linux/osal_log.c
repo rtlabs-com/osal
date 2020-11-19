@@ -43,6 +43,9 @@ void os_log (uint8_t type, const char * fmt, ...)
    case LOG_LEVEL_ERROR:
       printf ("[%s ERROR] ", timestamp);
       break;
+   case LOG_LEVEL_FATAL:
+      printf ("[%s FATAL] ", timestamp);
+      break;
    default:
       break;
    }
@@ -52,4 +55,3 @@ void os_log (uint8_t type, const char * fmt, ...)
    va_end (list);
    fflush (stdout);
 }
-
