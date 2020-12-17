@@ -20,6 +20,11 @@ void * os_malloc (size_t size)
    return malloc (size);
 }
 
+void os_free (void * ptr)
+{
+   free (ptr);
+}
+
 os_mutex_t * os_mutex_create (void)
 {
    return CreateMutex (NULL, FALSE, NULL);

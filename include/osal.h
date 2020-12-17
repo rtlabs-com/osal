@@ -73,6 +73,7 @@ typedef void os_timer_t;
 #endif
 
 void * os_malloc (size_t size);
+void os_free (void * ptr);
 
 void os_usleep (uint32_t us);
 uint32_t os_get_current_time_us (void);
