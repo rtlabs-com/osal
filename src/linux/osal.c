@@ -44,6 +44,11 @@ void * os_malloc (size_t size)
    return malloc (size);
 }
 
+void os_free (void * ptr)
+{
+   free (ptr);
+}
+
 os_thread_t * os_thread_create (
    const char * name,
    uint32_t priority,
