@@ -13,10 +13,12 @@
 # full license information.
 #*******************************************************************/
 
-cmake_minimum_required (VERSION 3.13)
+cmake_minimum_required (VERSION 3.14)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools")
 project (OSAL VERSION 0.1.0)
+
+include(GetGitRevision)
 
 # Default settings if this is the main project
 if (CMAKE_PROJECT_NAME STREQUAL OSAL)
@@ -83,7 +85,6 @@ target_include_directories(osal
 install(
   TARGETS osal
   EXPORT OsalConfig
-  DESTINATION lib
   )
 
 install(
