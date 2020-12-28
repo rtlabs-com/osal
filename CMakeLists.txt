@@ -14,13 +14,30 @@
 #*******************************************************************/
 
 cmake_minimum_required (VERSION 3.13)
-set(CMAKE_MODULE_PATH "")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools")
 project (OSAL VERSION 0.1.0)
 
+# Default settings if this is the main project
 if (CMAKE_PROJECT_NAME STREQUAL OSAL)
   include(CTest)
+
+  # Default to release build with debug info
+  if (NOT CMAKE_BUILD_TYPE)
+    set (CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE)
+  endif (NOT CMAKE_BUILD_TYPE)
+
+  # Default to installing in build directory
+  if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX ${OSAL_BINARY_DIR}/install
+      CACHE PATH "Default install path" FORCE)
+  endif()
+
+  message(STATUS "Current build type is: ${CMAKE_BUILD_TYPE}")
+  message(STATUS "Current install path is: ${CMAKE_INSTALL_PREFIX}")
+  message(STATUS "Building for ${CMAKE_SYSTEM_NAME}")
 endif()
 
 # Set required standard level
@@ -37,20 +54,6 @@ configure_file (
   ${OSAL_BINARY_DIR}/src/version.h
   )
 
-# Default to release build with debug info
-if (NOT CMAKE_BUILD_TYPE)
-  set (CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
-    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-    FORCE)
-endif (NOT CMAKE_BUILD_TYPE)
-message(STATUS "Current build type is: ${CMAKE_BUILD_TYPE}")
-
-# Default to installing in build directory
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX ${OSAL_BINARY_DIR}/install
-    CACHE PATH "Default install path" FORCE)
-endif()
-
 # Add platform-dependent targets early, so they can be configured by
 # platform
 add_library(osal "")
@@ -61,7 +64,6 @@ endif()
 
 # Platform configuration
 include(${CMAKE_SYSTEM_NAME})
-message(STATUS "Building for ${CMAKE_SYSTEM_NAME}")
 
 target_include_directories(osal
   PUBLIC
