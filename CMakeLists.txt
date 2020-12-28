@@ -58,6 +58,12 @@ configure_file (
 # platform
 add_library(osal "")
 
+# Use position independent code if platform supports shared libraries
+get_property(SUPPORTS_SHARED GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+if (SUPPORTS_SHARED)
+  set_property(TARGET osal PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
+
 if (CMAKE_PROJECT_NAME STREQUAL OSAL AND BUILD_TESTING)
   add_executable(osal_test "")
 endif()
