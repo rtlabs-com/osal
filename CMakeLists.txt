@@ -42,10 +42,6 @@ if (CMAKE_PROJECT_NAME STREQUAL OSAL)
   message(STATUS "Building for ${CMAKE_SYSTEM_NAME}")
 endif()
 
-# Set required standard level
-set (CMAKE_C_STANDARD 99)
-set (CMAKE_CXX_STANDARD 11)
-
 # Always use standard .o suffix
 set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
@@ -72,6 +68,12 @@ endif()
 
 # Platform configuration
 include(${CMAKE_SYSTEM_NAME})
+
+target_compile_features(osal
+  PUBLIC
+  c_std_99
+  PRIVATE
+  cxx_std_11)
 
 target_include_directories(osal
   PUBLIC
