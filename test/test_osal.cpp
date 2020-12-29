@@ -106,7 +106,7 @@ TEST_F (Osal, MboxShouldNotTimeout)
    tmo = os_mbox_fetch (mbox, &msg, OS_WAIT_FOREVER);
 
    EXPECT_EQ (0, tmo);
-   EXPECT_EQ (1, (long)msg);
+   EXPECT_EQ (1, (intptr_t)msg);
 
    os_mbox_destroy (mbox);
 }
