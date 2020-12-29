@@ -67,7 +67,7 @@ if (CMAKE_PROJECT_NAME STREQUAL OSAL AND BUILD_TESTING)
 endif()
 
 # Platform configuration
-include(${CMAKE_SYSTEM_NAME})
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/${CMAKE_SYSTEM_NAME}.cmake)
 
 target_compile_features(osal
   PUBLIC
