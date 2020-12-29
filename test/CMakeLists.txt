@@ -19,6 +19,10 @@ get_target_property(OSAL_OPTIONS osal COMPILE_OPTIONS)
 get_target_property(OSAL_INCLUDES osal INCLUDE_DIRECTORIES)
 get_target_property(OSAL_LIBS osal LINK_LIBRARIES)
 
+if (OSAL_LIBS STREQUAL "OSAL_LIBS-NOTFOUND")
+  set(OSAL_LIBS "")
+endif()
+
 # Make source paths absolute
 list(TRANSFORM OSAL_SOURCES PREPEND ${OSAL_SOURCE_DIR}/)
 
@@ -49,3 +53,6 @@ target_link_libraries(osal_test
   PRIVATE
   ${OSAL_LIBS}
   )
+
+# No need for gmock
+set(BUILD_GMOCK OFF CACHE BOOL "")

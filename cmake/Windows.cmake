@@ -13,8 +13,6 @@
 # full license information.
 #*******************************************************************/
 
-set(GOOGLE_TEST_INDIVIDUAL TRUE)
-
 target_sources(osal PRIVATE
   src/windows/osal.c
   src/windows/osal_log.c
@@ -37,5 +35,9 @@ target_include_directories(osal PUBLIC
 install(FILES
   src/windows/sys/osal_cc.h
   src/windows/sys/osal_sys.h
-  DESTINATION include
+  DESTINATION include/sys
   )
+
+if (BUILD_TESTING)
+  set(GOOGLE_TEST_INDIVIDUAL TRUE)
+endif()

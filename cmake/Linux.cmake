@@ -13,7 +13,6 @@
 # full license information.
 #*******************************************************************/
 
-set(GOOGLE_TEST_INDIVIDUAL TRUE)
 
 target_sources(osal PRIVATE
   src/linux/osal.c
@@ -46,3 +45,7 @@ install(FILES
   src/linux/sys/osal_sys.h
   DESTINATION include/sys
   )
+
+if (BUILD_TESTING)
+  set(GOOGLE_TEST_INDIVIDUAL TRUE)
+endif()
