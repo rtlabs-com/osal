@@ -13,6 +13,7 @@
 # full license information.
 #*******************************************************************/
 
+find_package(Threads)
 
 target_sources(osal PRIVATE
   src/linux/osal.c
@@ -34,7 +35,7 @@ target_include_directories(osal PUBLIC
   )
 
 target_link_libraries(osal PUBLIC
-  pthread
+  Threads::Threads
   rt
   INTERFACE
   $<$<CONFIG:Coverage>:--coverage>
