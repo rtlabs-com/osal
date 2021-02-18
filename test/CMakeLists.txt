@@ -26,6 +26,12 @@ endif()
 # Make source paths absolute
 list(TRANSFORM OSAL_SOURCES PREPEND ${OSAL_SOURCE_DIR}/)
 
+set_target_properties (osal_test
+  PROPERTIES
+  C_STANDARD 99
+  CXX_STANDARD 11
+  )
+
 target_sources(osal_test PRIVATE
   # Units to be tested
   ${OSAL_SOURCES}

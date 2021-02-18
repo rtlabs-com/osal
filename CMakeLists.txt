@@ -69,11 +69,12 @@ endif()
 # Platform configuration
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/${CMAKE_SYSTEM_NAME}.cmake)
 
-target_compile_features(osal
-  PUBLIC
-  c_std_99
-  PRIVATE
-  cxx_std_11)
+set_target_properties (osal
+  PROPERTIES
+  C_STANDARD 99
+  )
+
+target_compile_features(osal PUBLIC c_std_99)
 
 target_include_directories(osal
   PUBLIC
