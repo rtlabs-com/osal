@@ -1,5 +1,7 @@
 OS abstraction layer
 ====================
+[![Build Status](https://github.com/rtlabs-com/osal/workflows/Build/badge.svg?branch=master)](https://github.com/rtlabs-com/osal/actions?workflow=Build)
+[![CodeQL](https://github.com/rtlabs-com/osal/workflows/CodeQL/badge.svg?branch=master)](https://github.com/rtlabs-com/osal/actions?workflow=CodeQL)
 
 This repository contains an OS abstraction layer. The goal of the
 abstraction layer is to simplify writing software that runs on many
