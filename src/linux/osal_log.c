@@ -17,17 +17,18 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <time.h>
 
 void os_log (uint8_t type, const char * fmt, ...)
 {
    va_list list;
    time_t rawtime;
-   struct tm * timestruct;
+   struct tm timestruct;
    char timestamp[10];
 
    time (&rawtime);
-   timestruct = localtime (&rawtime);
-   strftime (timestamp, sizeof (timestamp), "%H:%M:%S", timestruct);
+   localtime_r (&rawtime, &timestruct);
+   strftime (timestamp, sizeof (timestamp), "%H:%M:%S", &timestruct);
 
    switch (LOG_LEVEL_GET (type))
    {
