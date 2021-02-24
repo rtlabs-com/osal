@@ -1,0 +1,49 @@
+name: Clang
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ master ]
+  schedule:
+    - cron: '23 13 * * 3'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Install dependencies
+      run: sudo apt-get install clang-tools
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Run analyzer
+      run: |
+          cmake -E make_directory ${{github.workspace}}/build.clang
+          scan-build cmake \
+             -B ${{github.workspace}}/build.clang \
+             -S ${{github.workspace}} \
+             -DBUILD_TESTING=OFF \
+             -DCMAKE_BUILD_TYPE=Release
+          scan-build \
+             -sarif \
+             -o ${{github.workspace}}/sarif \
+             make \
+               -C ${{github.workspace}}/build.clang \
+               -j4
+
+    - name: Merge results
+      uses: microsoft/sarif-actions@v0.1
+      with:
+        command: 'merge sarif/*/*.sarif'
+
+    - name: Upload results
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ${{github.workspace}}/merged.sarif
