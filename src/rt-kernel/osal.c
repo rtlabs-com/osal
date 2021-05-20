@@ -15,8 +15,6 @@
 
 #include "osal.h"
 
-#include <bsp.h>
-
 void * os_malloc (size_t size)
 {
    return malloc (size);
