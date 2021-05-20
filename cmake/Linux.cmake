@@ -15,6 +15,10 @@
 
 find_package(Threads)
 
+option (USE_SCHED_FIFO
+  "Use SCHED_FIFO policy. May require extra privileges to run"
+  OFF)
+
 target_sources(osal PRIVATE
   src/linux/osal.c
   src/linux/osal_log.c
@@ -26,6 +30,7 @@ target_compile_options(osal
   -Wextra
   -Werror
   -Wno-unused-parameter
+  $<$<BOOL:${USE_SCHED_FIFO}>:-DUSE_SCHED_FIFO>
   INTERFACE
   $<$<CONFIG:Coverage>:--coverage>
   )
