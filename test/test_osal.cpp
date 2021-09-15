@@ -36,34 +36,34 @@ class Osal : public ::testing::Test
 TEST_F (Osal, SemShouldTimeoutWhenCountIsZero)
 {
    os_sem_t * sem = os_sem_create (2);
-   int tmo;
+   bool tmo;
 
    // Count 2
    tmo = os_sem_wait (sem, 100);
-   EXPECT_EQ (0, tmo);
+   EXPECT_FALSE (tmo);
 
    // Count 1
    tmo = os_sem_wait (sem, 100);
-   EXPECT_EQ (0, tmo);
+   EXPECT_FALSE (tmo);
 
    // Count 0 - timeout
    tmo = os_sem_wait (sem, 100);
-   EXPECT_EQ (1, tmo);
+   EXPECT_TRUE (tmo);
 
    // Count 0 - timeout
    tmo = os_sem_wait (sem, 100);
-   EXPECT_EQ (1, tmo);
+   EXPECT_TRUE (tmo);
 
    // Increase count
    os_sem_signal (sem);
 
    // Count 1
    tmo = os_sem_wait (sem, 100);
-   EXPECT_EQ (0, tmo);
+   EXPECT_FALSE (tmo);
 
    // Count 0 - timeout
    tmo = os_sem_wait (sem, 100);
-   EXPECT_EQ (1, tmo);
+   EXPECT_TRUE (tmo);
 
    os_sem_destroy (sem);
 }
@@ -72,11 +72,11 @@ TEST_F (Osal, EventShouldNotTimeout)
 {
    os_event_t * event = os_event_create();
    uint32_t value     = 99;
-   int tmo;
+   bool tmo;
 
    os_event_set (event, 1);
    tmo = os_event_wait (event, 1, &value, OS_WAIT_FOREVER);
-   EXPECT_EQ (0, tmo);
+   EXPECT_FALSE (tmo);
    EXPECT_EQ (1u, value);
 
    os_event_destroy (event);
@@ -86,11 +86,11 @@ TEST_F (Osal, EventShouldTimeout)
 {
    os_event_t * event = os_event_create();
    uint32_t value     = 99;
-   int tmo;
+   bool tmo;
 
    os_event_set (event, 2);
    tmo = os_event_wait (event, 1, &value, 100);
-   EXPECT_GT (tmo, 0);
+   EXPECT_TRUE (tmo);
    EXPECT_EQ (0u, value);
 
    os_event_destroy (event);
@@ -100,12 +100,12 @@ TEST_F (Osal, MboxShouldNotTimeout)
 {
    os_mbox_t * mbox = os_mbox_create (2);
    void * msg;
-   int tmo;
+   bool tmo;
 
    os_mbox_post (mbox, (void *)1, OS_WAIT_FOREVER);
    tmo = os_mbox_fetch (mbox, &msg, OS_WAIT_FOREVER);
 
-   EXPECT_EQ (0, tmo);
+   EXPECT_FALSE (tmo);
    EXPECT_EQ (1, (intptr_t)msg);
 
    os_mbox_destroy (mbox);
@@ -115,10 +115,10 @@ TEST_F (Osal, FetchFromEmptyMboxShouldTimeout)
 {
    os_mbox_t * mbox = os_mbox_create (2);
    void * msg;
-   int tmo;
+   bool tmo;
 
    tmo = os_mbox_fetch (mbox, &msg, 100);
-   EXPECT_EQ (1, tmo);
+   EXPECT_TRUE (tmo);
 
    os_mbox_destroy (mbox);
 }
@@ -126,12 +126,12 @@ TEST_F (Osal, FetchFromEmptyMboxShouldTimeout)
 TEST_F (Osal, PostToFullMBoxShouldTimeout)
 {
    os_mbox_t * mbox = os_mbox_create (2);
-   int tmo;
+   bool tmo;
 
    os_mbox_post (mbox, (void *)1, 100);
    os_mbox_post (mbox, (void *)2, 100);
    tmo = os_mbox_post (mbox, (void *)3, 100);
-   EXPECT_EQ (1, tmo);
+   EXPECT_TRUE (tmo);
 
    os_mbox_destroy (mbox);
 }
