@@ -48,6 +48,10 @@ extern "C" {
 #define OS_WAIT_FOREVER 0xFFFFFFFF
 #endif
 
+#ifndef OS_MAIN
+#define OS_MAIN int main
+#endif
+
 #ifndef OS_MUTEX
 typedef void os_mutex_t;
 #endif
