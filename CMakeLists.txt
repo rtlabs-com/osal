@@ -87,11 +87,12 @@ target_include_directories(osal
 
 install(
   TARGETS osal
-  EXPORT OsalConfig
+  EXPORT OsalTargets
   )
 
 install(
-  EXPORT OsalConfig
+  EXPORT OsalTargets
+  FILE OsalConfig.cmake
   DESTINATION cmake
   )
 

@@ -107,3 +107,26 @@ Workbench revision control tools can be used.
 The library and the unit tests will be built. Note that the tests
 require a stack of at least 6 kB. You may have to increase
 CFG_MAIN_STACK_SIZE in your bsp include/config.h file.
+
+STM32Cube / FreeRTOS / lwIP
+===========================
+
+First, clone the relevant STM32Cube repo for your platform. For
+instance, to build for STM32F7 (fetching a specific tag only):
+
+```
+$ git clone https://github.com/STMicroelectronics/STM32CubeF7.git \
+    -b v1.16.1 --single-branch --depth 1
+```
+
+Then, when configuring specify CPU, board and path to the cloned git
+repository:
+
+```
+$ CPU=cortex-m7fd BOARD=STM32F769I-DISCO CUBE_DIR=/path/to/cube cmake \
+    -B build.cube \
+    -DCMAKE_TOOLCHAIN_FILE=cmake/tools/toolchain/stm32cube.cmake \
+    -G "Unix Makefiles"
+$ cmake --build build.cube
+```
+
