@@ -136,27 +136,30 @@ TEST_F (Osal, PostToFullMBoxShouldTimeout)
    os_mbox_destroy (mbox);
 }
 
+#define TEN_MS (10 * 1000)
+#define CALLS   39
+
 TEST_F (Osal, CyclicTimer)
 {
    int t0, t1;
    os_timer_t * timer;
 
-   timer = os_timer_create (10 * 1000, expired, (void *)0x42, false);
+   timer = os_timer_create (TEN_MS, expired, (void *)0x42, false);
    os_timer_start (timer);
 
    t0 = os_get_current_time_us();
-   os_usleep (350 * 1000);
+   os_usleep (CALLS * TEN_MS);
    t1 = os_get_current_time_us();
    os_timer_stop (timer);
 
-   EXPECT_NEAR (350 * 1000, t1 - t0, 1000);
-   EXPECT_NEAR (35, expired_calls, 2);
+   EXPECT_NEAR (CALLS * TEN_MS, t1 - t0, 1000);
+   EXPECT_NEAR (CALLS, expired_calls, 2);
 
    EXPECT_EQ ((void *)0x42, expired_arg);
 
    // Check that timer is stopped
    expired_calls = 0;
-   os_usleep (100 * 1000);
+   os_usleep (10 * TEN_MS);
    EXPECT_NEAR (0, expired_calls, 1);
 
    os_timer_destroy (timer);
@@ -166,10 +169,10 @@ TEST_F (Osal, OneshotTimer)
 {
    os_timer_t * timer;
 
-   timer = os_timer_create (1000, expired, (void *)0x42, true);
+   timer = os_timer_create (TEN_MS, expired, (void *)0x42, true);
 
    os_timer_start (timer);
-   os_usleep (100 * 1000);
+   os_usleep (10 * TEN_MS);
 
    EXPECT_EQ (1, expired_calls);
    EXPECT_EQ ((void *)0x42, expired_arg);

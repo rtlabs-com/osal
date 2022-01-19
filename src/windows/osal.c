@@ -254,11 +254,17 @@ void os_mbox_destroy (os_mbox_t * mbox)
    free (mbox);
 }
 
+#define URESOLUTION  10
+
 static VOID CALLBACK
-os_timer_callback (os_timer_t * timer, BOOLEAN timer_or_waitfired)
+timer_callback (UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
+   os_timer_t * timer = (os_timer_t *)dwUser;
+
    if (timer->fn)
+   {
       timer->fn (timer, timer->arg);
+   }
 }
 
 os_timer_t * os_timer_create (
@@ -286,30 +292,27 @@ void os_timer_set (os_timer_t * timer, uint32_t us)
 
 void os_timer_start (os_timer_t * timer)
 {
-   DWORD period  = timer->us / 1000;
-   DWORD dueTime = period;
-   ULONG flags;
+   timeBeginPeriod (URESOLUTION);
 
-   flags = WT_EXECUTEINTIMERTHREAD;
-   if (timer->oneshot)
-   {
-      flags |= WT_EXECUTEONLYONCE;
-      period = 0;
-   }
-
-   CreateTimerQueueTimer (
-      &timer->handle,
-      NULL,
-      os_timer_callback,
-      timer,
-      dueTime,
-      period,
-      flags);
+   /****************************************************************
+    * N.B. The function timeSetEvent is obsolete.                  *
+    *      The reason for still using it here is that it gives     *
+    *      much better resolution (15 ms -> 1 ms) than when        *
+    *      using the recommended function CreateTimerQueueTimer.   *
+    ****************************************************************/
+   timer->timerID = timeSetEvent (
+      timer->us / 1000,
+      URESOLUTION,
+      timer_callback,
+      (DWORD_PTR)timer,
+      (timer->oneshot) ? TIME_ONESHOT : TIME_PERIODIC);
 }
 
 void os_timer_stop (os_timer_t * timer)
 {
-   DeleteTimerQueueTimer (NULL, timer->handle, INVALID_HANDLE_VALUE);
+   timeKillEvent (timer->timerID);
+
+   timeEndPeriod (URESOLUTION);
 }
 
 void os_timer_destroy (os_timer_t * timer)
