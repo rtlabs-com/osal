@@ -28,6 +28,9 @@ target_compile_options(osal
   /wd4200
   )
 
+target_link_libraries(osal
+  winmm)
+
 target_include_directories(osal PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/windows>
   )
