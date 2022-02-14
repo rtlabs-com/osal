@@ -61,7 +61,14 @@ os_thread_t * os_thread_create (
    handle =
       CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)entry, (LPVOID)arg, 0, NULL);
 
-   SetThreadPriority (handle, THREAD_PRIORITY_TIME_CRITICAL);
+   if (priority < 5)
+   {
+      SetThreadPriority (handle, THREAD_PRIORITY_TIME_CRITICAL);
+   }
+   else if (priority >= 15)
+   {
+      SetThreadPriority (handle, THREAD_PRIORITY_BELOW_NORMAL);
+   }
    return handle;
 }
 
