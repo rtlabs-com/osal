@@ -15,6 +15,8 @@
 
 #include "osal.h"
 
+#define URESOLUTION  10
+
 void * os_malloc (size_t size)
 {
    return malloc (size);
@@ -74,7 +76,20 @@ os_thread_t * os_thread_create (
 
 uint32_t os_get_current_time_us (void)
 {
-   return GetTickCount() * 1000;
+   static LARGE_INTEGER performanceFrequency = {0};
+   LARGE_INTEGER currentCount;
+   uint64_t currentTime;
+
+   if (performanceFrequency.QuadPart == 0)
+   {
+      timeBeginPeriod (URESOLUTION);
+      QueryPerformanceFrequency (&performanceFrequency);
+      performanceFrequency.QuadPart = performanceFrequency.QuadPart / (1000 * 1000);
+   }
+
+   QueryPerformanceCounter (&currentCount);
+   currentTime = currentCount.QuadPart / performanceFrequency.QuadPart;
+   return (uint32_t)(currentTime & UINT32_MAX);
 }
 
 os_sem_t * os_sem_create (size_t count)
@@ -260,8 +275,6 @@ void os_mbox_destroy (os_mbox_t * mbox)
    EnterCriticalSection (&mbox->lock);
    free (mbox);
 }
-
-#define URESOLUTION  10
 
 static VOID CALLBACK
 timer_callback (UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)

@@ -198,3 +198,14 @@ TEST_F (Osal, MultipleTimers)
    os_timer_destroy (timer1);
    os_timer_destroy (timer2);
 }
+
+TEST_F (Osal, CurrentTime)
+{
+   uint32_t t0, t1;
+
+   t0 = os_get_current_time_us();
+   os_usleep (100 * 1000);
+   t1 = os_get_current_time_us();
+
+   EXPECT_NEAR (100 * 1000, t1 - t0, 1000);
+}
