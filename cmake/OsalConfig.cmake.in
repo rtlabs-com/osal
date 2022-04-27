@@ -1,0 +1,9 @@
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    find_package(Threads REQUIRED)
+endif()
+
+
+@PACKAGE_INIT@
+
+include ( "${CMAKE_CURRENT_LIST_DIR}/OsalTargets.cmake" )
