@@ -92,9 +92,29 @@ install(
 
 install(
   EXPORT OsalTargets
-  FILE OsalConfig.cmake
+  FILE OsalTargets.cmake
+  DESTINATION cmake
+)
+  
+  
+include(CMakePackageConfigHelpers)
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/OsalConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/OsalConfig.cmake"
+  INSTALL_DESTINATION cmake
+  NO_SET_AND_CHECK_MACRO
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO
+  )
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/OsalConfig.cmake
   DESTINATION cmake
   )
+  
+#install(
+#  EXPORT OsalTargets
+#  FILE OsalConfig.cmake
+#  DESTINATION cmake
+#  )
 
 install(FILES
   include/osal.h
