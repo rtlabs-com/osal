@@ -110,12 +110,6 @@ install(FILES
   DESTINATION cmake
   )
   
-#install(
-#  EXPORT OsalTargets
-#  FILE OsalConfig.cmake
-#  DESTINATION cmake
-#  )
-
 install(FILES
   include/osal.h
   include/osal_log.h
