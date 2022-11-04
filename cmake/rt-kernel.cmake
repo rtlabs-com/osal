@@ -26,6 +26,10 @@ target_compile_options(osal
   -Wno-unused-parameter
   )
 
+target_link_libraries(osal
+  kern
+  )
+
 target_include_directories(osal PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/rt-kernel>
   )
