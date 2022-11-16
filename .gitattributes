@@ -1,3 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
-.* export-ignore
+
+# Ignore files for export and archive purposes
+.clang-format            export-ignore
+.git-blame-ignore-refs   export-ignore
+.gitattributes           export-ignore
+.github                  export-ignore
+.gitignore               export-ignore
+.gitmodules              export-ignore
