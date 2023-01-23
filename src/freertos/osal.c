@@ -14,11 +14,14 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "osal_utils.h"
 
 #include <stdlib.h>
 
 #define TMO_TO_TICKS(ms) \
    ((ms == OS_WAIT_FOREVER) ? portMAX_DELAY : (ms) / portTICK_PERIOD_MS)
+
+static volatile os_tick_state_t os_tick_state;
 
 void * os_malloc (size_t size)
 {
@@ -83,7 +86,18 @@ void os_usleep (uint32_t us)
 
 uint32_t os_get_current_time_us (void)
 {
-   return 1000 * (xTaskGetTickCount() / portTICK_PERIOD_MS);
+   uint32_t tick;
+   uint64_t time;
+
+   tick = xTaskGetTickCount();
+
+   vTaskSuspendAll()
+   time = os_tick_update(&os_tick_state, tick);
+   vTaskResumeAll()
+
+   time *= 1000ull;
+   time /= portTICK_PERIOD_MS;
+   return (uint32_t)time;
 }
 
 os_sem_t * os_sem_create (size_t count)

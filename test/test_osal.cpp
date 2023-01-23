@@ -14,6 +14,7 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "osal_utils.h"
 #include <gtest/gtest.h>
 
 static int expired_calls;
@@ -208,4 +209,27 @@ TEST_F (Osal, CurrentTime)
    t1 = os_get_current_time_us();
 
    EXPECT_NEAR (100 * 1000, t1 - t0, 1000);
+}
+
+TEST_F (Osal, TimeWrapping)
+{
+   volatile os_tick_state_t state = {};
+   EXPECT_EQ(os_tick_update(&state, 0x00000000u), 0x000000000ull);
+   EXPECT_EQ(os_tick_update(&state, 0x40000000u), 0x040000000ull);
+   EXPECT_EQ(os_tick_update(&state, 0x80000000u), 0x080000000ull);
+
+   /* right before wrap */
+   EXPECT_EQ(os_tick_update(&state, 0xFFFFFFFFu), 0x0FFFFFFFFull);
+
+   /* trigger wrap */
+   EXPECT_EQ(os_tick_update(&state, 0x00000000u), 0x100000000ull);
+
+   /* check that old tick before wrap still works */
+   EXPECT_EQ(os_tick_update(&state, 0xFFFFFFFFu), 0x0FFFFFFFFull);
+
+   /* continue after wrap */
+   EXPECT_EQ(os_tick_update(&state, 0x00000010u), 0x100000010ull);
+   EXPECT_EQ(os_tick_update(&state, 0x40000000u), 0x140000000ull);
+   EXPECT_EQ(os_tick_update(&state, 0x80000000u), 0x180000000ull);
+   EXPECT_EQ(os_tick_update(&state, 0x00000000u), 0x200000000ull);
 }
