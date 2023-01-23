@@ -14,6 +14,10 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "kern/types.h"
+#include "kern/int.h"
+
+extern const os_cfg_t os_cfg;
 
 void * os_malloc (size_t size)
 {
@@ -60,9 +64,38 @@ void os_usleep (uint32_t us)
    task_delay (tick_from_ms (us / 1000));
 }
 
+/**
+ * \brief Extend kernel tick to 64 bits without wrap
+ *
+ * \return uint64_t number of ticks since start
+ */
+static uint64_t os_get_current_tick (void)
+{
+   static volatile tick_t   os_tick_last = 0u;
+   static volatile uint64_t os_tick_base = 0u;
+   tick_t   tick;
+   tick_t   last;
+   uint64_t base;
+
+   int_lock();
+   last = os_tick_last;
+   base = os_tick_base;
+   tick = tick_get();
+   if (tick < last)
+   {
+      base += 1ull + UINT32_MAX;
+   }
+   os_tick_last = tick;
+   os_tick_base = base;
+   int_unlock();
+
+   return base + tick;
+}
+
 uint32_t os_get_current_time_us (void)
 {
-   return 1000 * tick_to_ms (tick_get());
+   uint64_t us = 10000000ull * os_get_current_tick() / os_cfg.ticks_per_second;
+   return (uint32_t)us;
 }
 
 os_sem_t * os_sem_create (size_t count)
