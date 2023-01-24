@@ -14,6 +14,13 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "kern/types.h"
+#include "kern/int.h"
+#include "osal_utils.h"
+
+extern const os_cfg_t os_cfg;
+static volatile os_tick_state_t os_tick_state;
+
 
 void * os_malloc (size_t size)
 {
@@ -62,7 +69,18 @@ void os_usleep (uint32_t us)
 
 uint32_t os_get_current_time_us (void)
 {
-   return 1000 * tick_to_ms (tick_get());
+   tick_t tick;
+   uint64_t time;
+
+   tick = tick_get();
+
+   int_lock();
+   time = os_tick_update(&os_tick_state, tick);
+   int_unlock();
+
+   time *= 10000000ull;
+   time /= os_cfg.ticks_per_second;
+   return (uint32_t)time;
 }
 
 os_sem_t * os_sem_create (size_t count)
