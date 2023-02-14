@@ -33,6 +33,7 @@ extern "C" {
 #define OS_EVENT
 #define OS_MBOX
 #define OS_TIMER
+#define OS_TICK
 
 typedef SemaphoreHandle_t os_mutex_t;
 typedef TaskHandle_t os_thread_t;
@@ -47,6 +48,8 @@ typedef struct os_timer
    void * arg;
    uint32_t us;
 } os_timer_t;
+
+typedef TickType_t os_tick_t;
 
 #ifdef __cplusplus
 }

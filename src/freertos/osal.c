@@ -86,6 +86,21 @@ uint32_t os_get_current_time_us (void)
    return 1000 * (xTaskGetTickCount() / portTICK_PERIOD_MS);
 }
 
+os_tick_t os_tick_current (void)
+{
+   return xTaskGetTickCount();
+}
+
+os_tick_t os_tick_from_us (uint32_t us)
+{
+   return us / (1000u * portTICK_PERIOD_MS);
+}
+
+void os_tick_sleep (os_tick_t tick)
+{
+   vTaskDelay (tick);
+}
+
 os_sem_t * os_sem_create (size_t count)
 {
    SemaphoreHandle_t handle = xSemaphoreCreateCounting (UINT32_MAX, count);

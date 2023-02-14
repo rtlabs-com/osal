@@ -29,6 +29,7 @@ extern "C" {
 #define OS_EVENT
 #define OS_MBOX
 #define OS_TIMER
+#define OS_TICK
 
 typedef pthread_t os_thread_t;
 typedef pthread_mutex_t os_mutex_t;
@@ -69,6 +70,8 @@ typedef struct os_timer
    uint32_t us;
    bool oneshot;
 } os_timer_t;
+
+typedef uint64_t os_tick_t;
 
 #ifdef __cplusplus
 }

@@ -209,3 +209,18 @@ TEST_F (Osal, CurrentTime)
 
    EXPECT_NEAR (100 * 1000, t1 - t0, 1000);
 }
+
+
+TEST_F (Osal, Tick)
+{
+   os_tick_t t0, t1, sleep;
+
+   sleep = os_tick_from_us (100 * 1000);
+   t0 = os_tick_current();
+   os_tick_sleep (sleep);
+   t1 = os_tick_current();
+
+   EXPECT_NEAR ((double)sleep,
+                (double)(t1 - t0),
+                (double)os_tick_from_us (1000));
+}

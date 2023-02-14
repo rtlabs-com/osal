@@ -65,6 +65,21 @@ uint32_t os_get_current_time_us (void)
    return 1000 * tick_to_ms (tick_get());
 }
 
+os_tick_t os_tick_current (void)
+{
+   return tick_get();
+}
+
+os_tick_t os_tick_from_us (uint32_t us)
+{
+   return tick_from_ms (us / 1000);
+}
+
+void os_tick_sleep (os_tick_t tick)
+{
+   task_delay (tick);
+}
+
 os_sem_t * os_sem_create (size_t count)
 {
    return sem_create (count);
