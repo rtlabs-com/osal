@@ -234,6 +234,36 @@ uint32_t os_get_current_time_us (void)
    return ts.tv_sec * 1000 * 1000 + ts.tv_nsec / 1000;
 }
 
+os_tick_t os_tick_current (void)
+{
+   struct timespec ts;
+   os_tick_t       tick;
+
+   clock_gettime (CLOCK_MONOTONIC, &ts);
+   tick = ts.tv_sec;
+   tick *= NSECS_PER_SEC;
+   tick += ts.tv_nsec;
+   return tick;
+}
+
+os_tick_t os_tick_from_us (uint32_t us)
+{
+   return (os_tick_t)us * 1000;
+}
+
+void os_tick_sleep (os_tick_t tick)
+{
+   struct timespec ts;
+   struct timespec remain;
+
+   ts.tv_sec  = tick / NSECS_PER_SEC;
+   ts.tv_nsec = tick % NSECS_PER_SEC;
+   while (clock_nanosleep (CLOCK_MONOTONIC, 0, &ts, &remain) != 0)
+   {
+      ts = remain;
+   }
+}
+
 os_event_t * os_event_create (void)
 {
    os_event_t * event;

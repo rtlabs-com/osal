@@ -74,22 +74,43 @@ os_thread_t * os_thread_create (
    return handle;
 }
 
-uint32_t os_get_current_time_us (void)
+static uint64_t os_get_frequency_tick (void)
 {
-   static LARGE_INTEGER performanceFrequency = {0};
-   LARGE_INTEGER currentCount;
-   uint64_t currentTime;
-
-   if (performanceFrequency.QuadPart == 0)
+   static uint64_t frequency;
+   if (frequency == 0)
    {
+      LARGE_INTEGER performanceFrequency;
       timeBeginPeriod (URESOLUTION);
       QueryPerformanceFrequency (&performanceFrequency);
-      performanceFrequency.QuadPart = performanceFrequency.QuadPart / (1000 * 1000);
+      frequency = performanceFrequency.QuadPart;
    }
+   return frequency;
+}
 
+uint32_t os_get_current_time_us (void)
+{
+   LARGE_INTEGER currentCount;
+   uint64_t currentTime;
    QueryPerformanceCounter (&currentCount);
-   currentTime = currentCount.QuadPart / performanceFrequency.QuadPart;
+   currentTime = 1000000 * currentCount.QuadPart / os_get_frequency_tick();
    return (uint32_t)(currentTime & UINT32_MAX);
+}
+
+os_tick_t os_tick_current (void)
+{
+   LARGE_INTEGER currentCount;
+   QueryPerformanceCounter (&currentCount);
+   return currentCount.QuadPart;
+}
+
+os_tick_t os_tick_from_us (uint32_t us)
+{
+   return os_get_frequency_tick() * us / 1000000;
+}
+
+void os_tick_sleep (os_tick_t tick)
+{
+   Sleep ((DWORD)(1000u * tick / os_get_frequency_tick()));
 }
 
 os_sem_t * os_sem_create (size_t count)

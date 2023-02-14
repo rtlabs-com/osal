@@ -76,11 +76,19 @@ typedef void os_mbox_t;
 typedef void os_timer_t;
 #endif
 
+#ifndef OS_TICK
+typedef void os_tick_t;
+#endif
+
 void * os_malloc (size_t size);
 void os_free (void * ptr);
 
 void os_usleep (uint32_t us);
 uint32_t os_get_current_time_us (void);
+
+os_tick_t os_tick_current (void);
+os_tick_t os_tick_from_us (uint32_t us);
+void      os_tick_sleep (os_tick_t tick);
 
 os_thread_t * os_thread_create (
    const char * name,
