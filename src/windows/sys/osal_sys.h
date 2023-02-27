@@ -68,11 +68,12 @@ typedef struct os_mbox
 
 typedef struct os_timer
 {
-   UINT timerID;
+   HANDLE timer;
    void (*fn) (struct os_timer *, void * arg);
    void * arg;
-   uint32_t us;
+   LARGE_INTEGER time;
    bool oneshot;
+   bool run;
 } os_timer_t;
 
 typedef uint64_t os_tick_t;
