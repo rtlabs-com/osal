@@ -14,8 +14,17 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "osal_log.h"
 
 #define URESOLUTION  10
+
+typedef struct os_thread_state
+{
+   HANDLE timer;
+} os_thread_state_t;
+
+static DWORD os_thread_tls_index = TLS_OUT_OF_INDEXES;
+
 
 void * os_malloc (size_t size)
 {
@@ -49,7 +58,28 @@ void os_mutex_destroy (os_mutex_t * mutex)
 
 void os_usleep (uint32_t usec)
 {
-   Sleep (usec / 1000);
+   os_tick_sleep (os_tick_from_us (usec));
+}
+
+static os_thread_state_t * os_thread_get_state()
+{
+   os_thread_state_t * state;
+
+   if (os_thread_tls_index == TLS_OUT_OF_INDEXES)
+   {
+      os_thread_tls_index = TlsAlloc();
+   }
+
+   state = (os_thread_state_t *)TlsGetValue(os_thread_tls_index);
+   if (state != NULL)
+   {
+      return state;
+   }
+
+   state = (os_thread_state_t *)malloc (sizeof (*state));
+   state->timer = CreateWaitableTimerEx (NULL, NULL, CREATE_WAITABLE_TIMER_MANUAL_RESET | CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+   TlsSetValue (os_thread_tls_index, (LPVOID)state);
+   return state;
 }
 
 os_thread_t * os_thread_create (
@@ -80,7 +110,6 @@ static uint64_t os_get_frequency_tick (void)
    if (frequency == 0)
    {
       LARGE_INTEGER performanceFrequency;
-      timeBeginPeriod (URESOLUTION);
       QueryPerformanceFrequency (&performanceFrequency);
       frequency = performanceFrequency.QuadPart;
    }
@@ -110,7 +139,23 @@ os_tick_t os_tick_from_us (uint32_t us)
 
 void os_tick_sleep (os_tick_t tick)
 {
-   Sleep ((DWORD)(1000u * tick / os_get_frequency_tick()));
+   LARGE_INTEGER ft;
+   BOOL          res;
+   DWORD         event;
+   int64_t       delay;
+
+   os_thread_state_t * state = os_thread_get_state();
+
+   delay = 10000000ll;
+   delay *= tick;
+   delay /= os_get_frequency_tick();
+   ft.QuadPart = (uint64_t)(-delay);
+
+   res = SetWaitableTimer(state->timer, &ft, 0, NULL, NULL, 0);
+   assert(res);
+
+   event = WaitForSingleObject(state->timer, INFINITE);
+   assert(event == WAIT_OBJECT_0);
 }
 
 os_sem_t * os_sem_create (size_t count)
@@ -352,7 +397,7 @@ void os_timer_start (os_timer_t * timer)
 void os_timer_stop (os_timer_t * timer)
 {
    timeKillEvent (timer->timerID);
-
+   
    timeEndPeriod (URESOLUTION);
 }
 
