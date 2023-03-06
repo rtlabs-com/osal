@@ -8,8 +8,8 @@
  * www.rt-labs.com
  * Copyright 2018 rt-labs AB, Sweden.
  *
- * This software is dual-licensed under GPLv3 and a commercial
- * license. See the file LICENSE.md distributed with this software for
+ * This software is licensed under the terms of the BSD 3-clause
+ * license. See the file LICENSE distributed with this software for
  * full license information.
  ********************************************************************/
 
