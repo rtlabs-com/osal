@@ -42,6 +42,7 @@ static inline void cc_assert (int exp) CLANG_ANALYZER_NORETURN
 #define CC_PACKED_BEGIN
 #define CC_PACKED_END
 #define CC_PACKED __attribute__ ((packed))
+#define CC_ALIGNED(n) __attribute__((aligned (n)))
 
 #define CC_FORMAT(str, arg) __attribute__ ((format (printf, str, arg)))
 

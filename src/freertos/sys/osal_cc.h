@@ -26,6 +26,7 @@ extern "C"
 #define CC_PACKED_BEGIN
 #define CC_PACKED_END
 #define CC_PACKED             __attribute__((packed))
+#define CC_ALIGNED(n)         __attribute__((aligned (n)))
 
 #define CC_FORMAT(str,arg)    __attribute__((format (printf, str, arg)))
 
