@@ -234,20 +234,26 @@ void os_timer_set (os_timer_t * timer, uint32_t us)
 void os_timer_start (os_timer_t * timer)
 {
    /* Start timer by updating the period */
-   CC_ASSERT (
-      xTimerChangePeriod (
+   BaseType_t status = xTimerChangePeriod (
          timer->handle,
          (timer->us / portTICK_PERIOD_MS) / 1000,
-         portMAX_DELAY) == pdPASS);
+         portMAX_DELAY);
+
+   CC_UNUSED (status);
+   CC_ASSERT (status == pdPASS);
 }
 
 void os_timer_stop (os_timer_t * timer)
 {
-   CC_ASSERT (xTimerStop (timer->handle, portMAX_DELAY) == pdPASS);
+   BaseType_t status = xTimerStop (timer->handle, portMAX_DELAY);
+   CC_UNUSED (status);
+   CC_ASSERT (status == pdPASS);
 }
 
 void os_timer_destroy (os_timer_t * timer)
 {
-   CC_ASSERT (xTimerDelete (timer->handle, portMAX_DELAY) == pdPASS);
+   BaseType_t status = xTimerDelete (timer->handle, portMAX_DELAY);
+   CC_UNUSED (status);
+   CC_ASSERT (status == pdPASS);
    free (timer);
 }
