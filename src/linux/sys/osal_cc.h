@@ -91,6 +91,8 @@ static inline void cc_assert (int exp) CLANG_ANALYZER_NORETURN
 #define CC_STATIC_ASSERT(exp) _Static_assert(exp, "")
 #endif
 
+#define CC_UNUSED(var) (void)(var)
+
 #ifdef __cplusplus
 }
 #endif

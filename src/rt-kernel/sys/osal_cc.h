@@ -81,6 +81,7 @@ extern "C" {
 
 #define CC_ASSERT(exp)        ASSERT (exp)
 #define CC_STATIC_ASSERT(exp) _Static_assert(exp, "")
+#define CC_UNUSED(var) (void)(var)
 
 #ifdef __cplusplus
 }
