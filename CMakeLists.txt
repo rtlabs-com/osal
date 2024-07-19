@@ -56,6 +56,14 @@ configure_file (
 # platform
 add_library(osal "")
 
+# Suppress certain warnings when building with MSVC
+if (WINDOWS_MONO)
+target_compile_options (osal
+  PRIVATE
+  /wd4820 # padding added
+  )
+endif()
+
 # Use position independent code if platform supports shared libraries
 get_property(SUPPORTS_SHARED GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
 if (SUPPORTS_SHARED)
