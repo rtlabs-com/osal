@@ -20,7 +20,13 @@
 extern "C" {
 #endif
 
+#define WIN32_LEAN_AND_MEAN /* Do not include <winsock.h> */
 #include <windows.h>
+
+/* Libraries excluded by WIN32_LEAN_AND_MEAN */
+#include <malloc.h>
+#include <timeapi.h>
+#include <mmsystem.h>
 
 #define OS_WAIT_FOREVER INFINITE
 
