@@ -38,20 +38,18 @@ os_thread_t * os_thread_create (
    void * arg)
 {
    TaskHandle_t xHandle = NULL;
+   BaseType_t status;
 
    /* stacksize in freertos is not in bytes but in stack depth, it should be
     * divided by the stack width */
    configSTACK_DEPTH_TYPE stackdepth =
       stacksize / sizeof (StackType_t);
 
-   if (xTaskCreate (entry, name, stackdepth, arg, priority, &xHandle) == pdPASS)
-   {
-      return (os_thread_t *)xHandle;
-   }
-   else
-   {
-      return NULL;
-   }
+   status = xTaskCreate (entry, name, stackdepth, arg, priority, &xHandle);
+   CC_UNUSED (status);
+   CC_ASSERT (status == pdPASS);
+   CC_ASSERT (xHandle != NULL);
+   return (os_thread_t *)xHandle;
 }
 
 os_mutex_t * os_mutex_create (void)
