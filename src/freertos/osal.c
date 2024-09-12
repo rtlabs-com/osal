@@ -42,7 +42,7 @@ os_thread_t * os_thread_create (
    /* stacksize in freertos is not in bytes but in stack depth, it should be
     * divided by the stack width */
    configSTACK_DEPTH_TYPE stackdepth =
-      stacksize / sizeof (configSTACK_DEPTH_TYPE);
+      stacksize / sizeof (StackType_t);
 
    if (xTaskCreate (entry, name, stackdepth, arg, priority, &xHandle) == pdPASS)
    {
