@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void os_log (uint8_t type, const char * fmt, ...)
+static void os_log_impl (uint8_t type, const char * fmt, ...)
 {
    va_list list;
 
@@ -49,3 +49,5 @@ void os_log (uint8_t type, const char * fmt, ...)
    va_end (list);
    fflush (stdout);
 }
+
+os_log_t os_log = os_log_impl;

@@ -69,7 +69,10 @@ extern "C" {
 #define LOG_ERROR_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_ERROR | type)
 #define LOG_FATAL_ENABLED(type)   LOG_ENABLED (LOG_LEVEL_FATAL | type)
 
-void os_log (uint8_t type, const char * fmt, ...) CC_FORMAT (2, 3);
+
+typedef void (*os_log_t) (uint8_t type, const char * fmt, ...) CC_FORMAT (2, 3);
+
+extern os_log_t os_log;
 
 #ifdef __cplusplus
 }
