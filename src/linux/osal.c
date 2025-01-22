@@ -545,10 +545,12 @@ void os_timer_set (os_timer_t * timer, uint32_t us)
 void os_timer_start (os_timer_t * timer)
 {
    struct itimerspec its;
+   uint32_t sec = timer->us / (1000 * 1000);
+   uint32_t us = timer->us - sec * 1000 * 1000;
 
    /* Start timer */
-   its.it_value.tv_sec     = 0;
-   its.it_value.tv_nsec    = 1000 * timer->us;
+   its.it_value.tv_sec     = sec;
+   its.it_value.tv_nsec    = 1000 * us;
    its.it_interval.tv_sec  = (timer->oneshot) ? 0 : its.it_value.tv_sec;
    its.it_interval.tv_nsec = (timer->oneshot) ? 0 : its.it_value.tv_nsec;
    timer_settime (timer->timerid, 0, &its, NULL);
