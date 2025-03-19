@@ -20,6 +20,71 @@
 extern "C" {
 #endif
 
+#if defined(__GNUC__) || defined(__GNUG__)
+
+#include <assert.h>
+
+#define CC_PACKED_BEGIN
+#define CC_PACKED_END
+#define CC_PACKED __attribute__ ((packed))
+
+#define CC_FORMAT(str, arg) __attribute__ ((format (printf, str, arg)))
+
+#if BYTE_ORDER == LITTLE_ENDIAN
+#define CC_TO_LE16(x)   ((uint16_t)(x))
+#define CC_TO_LE32(x)   ((uint32_t)(x))
+#define CC_TO_LE64(x)   ((uint64_t)(x))
+#define CC_FROM_LE16(x) ((uint16_t)(x))
+#define CC_FROM_LE32(x) ((uint32_t)(x))
+#define CC_FROM_LE64(x) ((uint64_t)(x))
+#define CC_TO_BE16(x)   ((uint16_t)__builtin_bswap16 (x))
+#define CC_TO_BE32(x)   ((uint32_t)__builtin_bswap32 (x))
+#define CC_TO_BE64(x)   ((uint64_t)__builtin_bswap64 (x))
+#define CC_FROM_BE16(x) ((uint16_t)__builtin_bswap16 (x))
+#define CC_FROM_BE32(x) ((uint32_t)__builtin_bswap32 (x))
+#define CC_FROM_BE64(x) ((uint64_t)__builtin_bswap64 (x))
+#else
+#define CC_TO_LE16(x)   ((uint16_t)__builtin_bswap16 (x))
+#define CC_TO_LE32(x)   ((uint32_t)__builtin_bswap32 (x))
+#define CC_TO_LE64(x)   ((uint64_t)__builtin_bswap64 (x))
+#define CC_FROM_LE16(x) ((uint16_t)__builtin_bswap16 (x))
+#define CC_FROM_LE32(x) ((uint32_t)__builtin_bswap32 (x))
+#define CC_FROM_LE64(x) ((uint64_t)__builtin_bswap64 (x))
+#define CC_TO_BE16(x)   ((uint16_t)(x))
+#define CC_TO_BE32(x)   ((uint32_t)(x))
+#define CC_TO_BE64(x)   ((uint64_t)(x))
+#define CC_FROM_BE16(x) ((uint16_t)(x))
+#define CC_FROM_BE32(x) ((uint32_t)(x))
+#define CC_FROM_BE64(x) ((uint64_t)(x))
+#endif
+
+#define CC_ATOMIC_GET8(p)  __atomic_load_n ((p), __ATOMIC_SEQ_CST)
+#define CC_ATOMIC_GET16(p) __atomic_load_n ((p), __ATOMIC_SEQ_CST)
+#define CC_ATOMIC_GET32(p) __atomic_load_n ((p), __ATOMIC_SEQ_CST)
+#define CC_ATOMIC_GET64(p) __atomic_load_n ((p), __ATOMIC_SEQ_CST)
+
+#define CC_ATOMIC_SET8(p, v)  __atomic_store_n ((p), (v), __ATOMIC_SEQ_CST)
+#define CC_ATOMIC_SET16(p, v) __atomic_store_n ((p), (v), __ATOMIC_SEQ_CST)
+#define CC_ATOMIC_SET32(p, v) __atomic_store_n ((p), (v), __ATOMIC_SEQ_CST)
+#define CC_ATOMIC_SET64(p, v) __atomic_store_n ((p), (v), __ATOMIC_SEQ_CST)
+
+#define CC_ASSERT(exp) cc_assert (exp)
+
+#ifdef __cplusplus
+#define CC_STATIC_ASSERT(exp) static_assert (exp, "")
+#else
+#define CC_STATIC_ASSERT(exp) _Static_assert(exp, "")
+#endif
+
+#define CC_UNUSED(var) (void)(var)
+
+static inline void cc_assert (int exp)
+{
+   assert (exp); // LCOV_EXCL_LINE
+}
+
+#elif defined(_MSC_VER)
+
 #include <assert.h>
 
 #define CC_PACKED_BEGIN __pragma (pack (push, 1))
@@ -64,6 +129,8 @@ static uint8_t __inline cc_ctz (uint32_t x)
 
 #define CC_ASSERT(exp)        assert (exp)
 #define CC_STATIC_ASSERT(exp) static_assert ((exp), "")
+
+#endif
 
 #ifdef __cplusplus
 }

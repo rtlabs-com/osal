@@ -20,12 +20,24 @@ target_sources(osal PRIVATE
 
 target_compile_options(osal
   PRIVATE
-  /W4
-  /WX
-  /wd4100
-  /wd4152
+  $<$<C_COMPILER_ID:MSVC>:
+    /W4
+    /WX
+    /wd4100
+    /wd4152
+  >
+
+  $<$<C_COMPILER_ID:GCC>:
+    -Wall
+    -Wextra
+    -Werror
+    -Wno-unused-parameter
+  >
+
   PUBLIC
-  /wd4200
+  $<$<C_COMPILER_ID:MSVC>:
+    /wd4200
+  >
   )
 
 target_link_libraries(osal
