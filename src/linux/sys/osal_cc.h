@@ -34,11 +34,6 @@ extern "C" {
 #define CLANG_ANALYZER_NORETURN
 #endif
 
-static inline void cc_assert (int exp) CLANG_ANALYZER_NORETURN
-{
-   assert (exp); // LCOV_EXCL_LINE
-}
-
 #define CC_PACKED_BEGIN
 #define CC_PACKED_END
 #define CC_PACKED __attribute__ ((packed))
@@ -83,7 +78,7 @@ static inline void cc_assert (int exp) CLANG_ANALYZER_NORETURN
 #define CC_ATOMIC_SET32(p, v) __atomic_store_n ((p), (v), __ATOMIC_SEQ_CST)
 #define CC_ATOMIC_SET64(p, v) __atomic_store_n ((p), (v), __ATOMIC_SEQ_CST)
 
-#define CC_ASSERT(exp) cc_assert (exp)
+#define CC_ASSERT(exp) assert (exp)
 
 #ifdef __cplusplus
 #define CC_STATIC_ASSERT(exp) static_assert (exp, "")
