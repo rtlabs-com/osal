@@ -29,7 +29,10 @@ void os_free (void * ptr)
 
 os_mutex_t * os_mutex_create (void)
 {
-   return CreateMutex (NULL, FALSE, NULL);
+   CRITICAL_SECTION * handle;
+   handle = CreateMutex (NULL, FALSE, NULL);
+   CC_ASSERT (handle != INVALID_HANDLE_VALUE);
+   return handle;
 }
 
 void os_mutex_lock (os_mutex_t * mutex)
@@ -62,6 +65,7 @@ os_thread_t * os_thread_create (
    HANDLE handle;
    handle =
       CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)entry, (LPVOID)arg, 0, NULL);
+   CC_ASSERT (handle != INVALID_HANDLE_VALUE);
 
    if (priority < 5)
    {
@@ -118,6 +122,7 @@ os_sem_t * os_sem_create (size_t count)
    os_sem_t * sem;
 
    sem = (os_sem_t *)malloc (sizeof (*sem));
+   CC_ASSERT (sem != NULL);
 
    InitializeConditionVariable (&sem->condition);
    InitializeCriticalSection (&sem->lock);
@@ -139,7 +144,7 @@ bool os_sem_wait (os_sem_t * sem, uint32_t time)
       {
          goto timeout;
       }
-      assert (success);
+      CC_ASSERT (success);
    }
 
    sem->count--;
@@ -168,6 +173,7 @@ os_event_t * os_event_create (void)
    os_event_t * event;
 
    event = (os_event_t *)malloc (sizeof (*event));
+   CC_ASSERT (event != NULL);
 
    InitializeConditionVariable (&event->condition);
    InitializeCriticalSection (&event->lock);
@@ -221,6 +227,7 @@ os_mbox_t * os_mbox_create (size_t size)
    os_mbox_t * mbox;
 
    mbox = (os_mbox_t *)malloc (sizeof (*mbox) + size * sizeof (void *));
+   CC_ASSERT (mbox != NULL);
 
    InitializeConditionVariable (&mbox->condition);
    InitializeCriticalSection (&mbox->lock);
@@ -246,7 +253,7 @@ bool os_mbox_fetch (os_mbox_t * mbox, void ** msg, uint32_t time)
       {
          goto timeout;
       }
-      assert (success);
+      CC_ASSERT (success);
    }
 
    *msg = mbox->msg[mbox->r++];
@@ -275,7 +282,7 @@ bool os_mbox_post (os_mbox_t * mbox, void * msg, uint32_t time)
       {
          goto timeout;
       }
-      assert (success);
+      CC_ASSERT (success);
    }
 
    mbox->msg[mbox->w++] = msg;
