@@ -61,10 +61,7 @@ os_thread_t * os_thread_create (
    pthread_attr_t attr;
 
    thread = malloc (sizeof (*thread));
-   if (thread == NULL)
-   {
-      return NULL;
-   }
+   CC_ASSERT (thread != 0);
 
    pthread_attr_init (&attr);
    pthread_attr_setstacksize (&attr, PTHREAD_STACK_MIN + stacksize);
@@ -78,11 +75,7 @@ os_thread_t * os_thread_create (
 #endif
 
    result = pthread_create (thread, &attr, (void *)entry, arg);
-   if (result != 0)
-   {
-      free (thread);
-      return NULL;
-   }
+   CC_ASSERT (result == 0);
 
    pthread_setname_np (*thread, name);
    return thread;
@@ -95,10 +88,7 @@ os_mutex_t * os_mutex_create (void)
    pthread_mutexattr_t mattr;
 
    mutex = malloc (sizeof (*mutex));
-   if (mutex == NULL)
-   {
-      return NULL;
-   }
+   CC_ASSERT (mutex != NULL);
 
    CC_STATIC_ASSERT (_POSIX_THREAD_PRIO_INHERIT > 0);
    pthread_mutexattr_init (&mattr);
@@ -106,11 +96,7 @@ os_mutex_t * os_mutex_create (void)
    pthread_mutexattr_settype (&mattr, PTHREAD_MUTEX_RECURSIVE);
 
    result = pthread_mutex_init (mutex, &mattr);
-   if (result != 0)
-   {
-      free (mutex);
-      return NULL;
-   }
+   CC_ASSERT (result == 0);
 
    return mutex;
 }
@@ -141,10 +127,7 @@ os_sem_t * os_sem_create (size_t count)
    pthread_condattr_t cattr;
 
    sem = malloc (sizeof (*sem));
-   if (sem == NULL)
-   {
-      return NULL;
-   }
+   CC_ASSERT (sem != NULL);
 
    pthread_condattr_init (&cattr);
    pthread_condattr_setclock (&cattr, CLOCK_MONOTONIC);
@@ -178,7 +161,7 @@ bool os_sem_wait (os_sem_t * sem, uint32_t time)
       if (time != OS_WAIT_FOREVER)
       {
          error = pthread_cond_timedwait (&sem->cond, &sem->mutex, &ts);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
          if (error)
          {
             goto timeout;
@@ -187,7 +170,7 @@ bool os_sem_wait (os_sem_t * sem, uint32_t time)
       else
       {
          error = pthread_cond_wait (&sem->cond, &sem->mutex);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
       }
    }
 
@@ -271,10 +254,7 @@ os_event_t * os_event_create (void)
    pthread_condattr_t cattr;
 
    event = (os_event_t *)malloc (sizeof (*event));
-   if (event == NULL)
-   {
-      return NULL;
-   }
+   CC_ASSERT (event != NULL);
 
    pthread_condattr_init (&cattr);
    pthread_condattr_setclock (&cattr, CLOCK_MONOTONIC);
@@ -309,7 +289,7 @@ bool os_event_wait (os_event_t * event, uint32_t mask, uint32_t * value, uint32_
       if (time != OS_WAIT_FOREVER)
       {
          error = pthread_cond_timedwait (&event->cond, &event->mutex, &ts);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
          if (error)
          {
             goto timeout;
@@ -318,7 +298,7 @@ bool os_event_wait (os_event_t * event, uint32_t mask, uint32_t * value, uint32_
       else
       {
          error = pthread_cond_wait (&event->cond, &event->mutex);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
       }
    }
 
@@ -358,10 +338,7 @@ os_mbox_t * os_mbox_create (size_t size)
    pthread_condattr_t cattr;
 
    mbox = (os_mbox_t *)malloc (sizeof (*mbox) + size * sizeof (void *));
-   if (mbox == NULL)
-   {
-      return NULL;
-   }
+   CC_ASSERT (mbox != NULL);
 
    pthread_condattr_init (&cattr);
    pthread_condattr_setclock (&cattr, CLOCK_MONOTONIC);
@@ -400,7 +377,7 @@ bool os_mbox_fetch (os_mbox_t * mbox, void ** msg, uint32_t time)
       if (time != OS_WAIT_FOREVER)
       {
          error = pthread_cond_timedwait (&mbox->cond, &mbox->mutex, &ts);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
          if (error)
          {
             goto timeout;
@@ -409,7 +386,7 @@ bool os_mbox_fetch (os_mbox_t * mbox, void ** msg, uint32_t time)
       else
       {
          error = pthread_cond_wait (&mbox->cond, &mbox->mutex);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
       }
    }
 
@@ -448,7 +425,7 @@ bool os_mbox_post (os_mbox_t * mbox, void * msg, uint32_t time)
       if (time != OS_WAIT_FOREVER)
       {
          error = pthread_cond_timedwait (&mbox->cond, &mbox->mutex, &ts);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
          if (error)
          {
             goto timeout;
@@ -457,7 +434,7 @@ bool os_mbox_post (os_mbox_t * mbox, void * msg, uint32_t time)
       else
       {
          error = pthread_cond_wait (&mbox->cond, &mbox->mutex);
-         assert (error != EINVAL);
+         CC_ASSERT (error != EINVAL);
       }
    }
 
@@ -518,6 +495,7 @@ os_timer_t * os_timer_create (
    os_timer_t * timer;
    struct sigevent sev;
    sigset_t sigset;
+   int res;
 
    /* Block SIGALRM in calling thread */
    sigemptyset (&sigset);
@@ -525,10 +503,7 @@ os_timer_t * os_timer_create (
    sigprocmask (SIG_BLOCK, &sigset, NULL);
 
    timer = (os_timer_t *)malloc (sizeof (*timer));
-   if (timer == NULL)
-   {
-      return NULL;
-   }
+   CC_ASSERT (timer != NULL);
 
    timer->exit      = false;
    timer->thread_id = 0;
@@ -540,11 +515,8 @@ os_timer_t * os_timer_create (
    /* Create timer thread */
    timer->thread =
       os_thread_create ("os_timer", TIMER_PRIO, 1024, os_timer_thread, timer);
-   if (timer->thread == NULL)
-   {
-      free (timer);
-      return NULL;
-   }
+   CC_ASSERT (timer->thread != NULL);
+
 
    /* Wait until timer thread sets its (kernel) thread id */
    do
@@ -559,11 +531,8 @@ os_timer_t * os_timer_create (
    sev.sigev_signo             = SIGALRM;
    sev.sigev_notify_attributes = NULL;
 
-   if (timer_create (CLOCK_MONOTONIC, &sev, &timer->timerid) == -1)
-   {
-      free (timer);
-      return NULL;
-   }
+   res = timer_create (CLOCK_MONOTONIC, &sev, &timer->timerid);
+   CC_ASSERT (res != -1);
 
    return timer;
 }
