@@ -25,6 +25,7 @@ target_compile_options(osal
     /WX
     /wd4100
     /wd4152
+    /wd4127 # conditional expression is constant
   >
 
   $<$<C_COMPILER_ID:GCC>:
