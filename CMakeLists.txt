@@ -54,7 +54,9 @@ configure_file (
 
 # Add platform-dependent targets early, so they can be configured by
 # platform
-add_library(osal "")
+add_library(osal
+  "src/osal_utils.c"
+)
 
 # Use position independent code if platform supports shared libraries
 get_property(SUPPORTS_SHARED GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
@@ -112,6 +114,7 @@ install(FILES
 install(FILES
   include/osal.h
   include/osal_log.h
+  include/osal_utils.h
   DESTINATION include
   )
 
