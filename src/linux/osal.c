@@ -185,8 +185,8 @@ void os_sem_signal (os_sem_t * sem)
 {
    pthread_mutex_lock (&sem->mutex);
    sem->count++;
-   pthread_mutex_unlock (&sem->mutex);
    pthread_cond_signal (&sem->cond);
+   pthread_mutex_unlock (&sem->mutex);
 }
 
 void os_sem_destroy (os_sem_t * sem)
@@ -312,8 +312,8 @@ void os_event_set (os_event_t * event, uint32_t value)
 {
    pthread_mutex_lock (&event->mutex);
    event->flags |= value;
-   pthread_mutex_unlock (&event->mutex);
    pthread_cond_signal (&event->cond);
+   pthread_mutex_unlock (&event->mutex);
 }
 
 void os_event_clr (os_event_t * event, uint32_t value)
@@ -321,7 +321,6 @@ void os_event_clr (os_event_t * event, uint32_t value)
    pthread_mutex_lock (&event->mutex);
    event->flags &= ~value;
    pthread_mutex_unlock (&event->mutex);
-   pthread_cond_signal (&event->cond);
 }
 
 void os_event_destroy (os_event_t * event)
