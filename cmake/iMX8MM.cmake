@@ -24,7 +24,6 @@ target_include_directories(osal PUBLIC
   )
 
 install(FILES
-  src/freertos/sys/osal_cc.h
   src/freertos/sys/osal_sys.h
   DESTINATION include/sys
   )
