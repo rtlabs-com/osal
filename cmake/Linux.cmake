@@ -47,7 +47,6 @@ target_link_libraries(osal PUBLIC
   )
 
 install(FILES
-  src/linux/sys/osal_cc.h
   src/linux/sys/osal_sys.h
   DESTINATION include/sys
   )

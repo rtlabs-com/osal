@@ -35,7 +35,6 @@ target_include_directories(osal PUBLIC
   )
 
 install(FILES
-  src/rt-kernel/sys/osal_cc.h
   src/rt-kernel/sys/osal_sys.h
   DESTINATION include/sys
   )
