@@ -14,6 +14,7 @@
  ********************************************************************/
 
 #include "osal_log.h"
+#include "osal_sys.h"
 
 #include <stdarg.h>
 #include <stdio.h>

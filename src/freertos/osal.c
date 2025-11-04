@@ -14,6 +14,7 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "osal_sys.h"
 
 #include <stdlib.h>
 
@@ -131,7 +132,7 @@ void os_sem_destroy (os_sem_t * sem)
 os_event_t * os_event_create (void)
 {
    EventGroupHandle_t handle = xEventGroupCreate();
-   CC_ASSERT (handle);
+   CC_ASSERT (handle != NULL);
    return (os_event_t *)handle;
 }
 
@@ -166,7 +167,7 @@ void os_event_destroy (os_event_t * event)
 os_mbox_t * os_mbox_create (size_t size)
 {
    QueueHandle_t handle = xQueueCreate (size, sizeof (void *));
-   CC_ASSERT (handle);
+   CC_ASSERT (handle != NULL);
    return (os_mbox_t *)handle;
 }
 
@@ -254,4 +255,9 @@ void os_timer_destroy (os_timer_t * timer)
    CC_UNUSED (status);
    CC_ASSERT (status == pdPASS);
    free (timer);
+}
+
+void os_init (void * (main_fn)(int argc, char * argv[]))
+{
+
 }

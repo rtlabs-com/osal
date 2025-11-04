@@ -25,22 +25,6 @@
 extern "C" {
 #endif
 
-#define OS_MAIN extern "C" int _main
-
-#define OS_THREAD
-#define OS_MUTEX
-#define OS_SEM
-#define OS_EVENT
-#define OS_MBOX
-#define OS_TIMER
-#define OS_TICK
-
-typedef SemaphoreHandle_t os_mutex_t;
-typedef TaskHandle_t os_thread_t;
-typedef SemaphoreHandle_t os_sem_t;
-typedef EventGroupHandle_t  os_event_t;
-typedef QueueHandle_t os_mbox_t;
-
 typedef struct os_timer
 {
    TimerHandle_t handle;
@@ -48,8 +32,6 @@ typedef struct os_timer
    void * arg;
    uint32_t us;
 } os_timer_t;
-
-typedef TickType_t os_tick_t;
 
 #ifdef __cplusplus
 }

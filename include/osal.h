@@ -25,7 +25,6 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "sys/osal_sys.h"
 #include "sys/osal_cc.h"
 
 #ifndef MIN
@@ -44,41 +43,19 @@ extern "C" {
 #define NELEMENTS(a) (sizeof (a) / sizeof ((a)[0]))
 #endif
 
-#ifndef OS_WAIT_FOREVER
 #define OS_WAIT_FOREVER 0xFFFFFFFF
-#endif
 
 #ifndef OS_MAIN
 #define OS_MAIN int main
 #endif
 
-#ifndef OS_MUTEX
-typedef void os_mutex_t;
-#endif
-
-#ifndef OS_SEM
-typedef void os_sem_t;
-#endif
-
-#ifndef OS_THREAD
-typedef void os_thread_t;
-#endif
-
-#ifndef OS_EVENT
-typedef void os_event_t;
-#endif
-
-#ifndef OS_MBOX
-typedef void os_mbox_t;
-#endif
-
-#ifndef OS_TIMER
-typedef void os_timer_t;
-#endif
-
-#ifndef OS_TICK
-typedef void os_tick_t;
-#endif
+typedef struct os_mutex os_mutex_t;
+typedef struct os_sem os_sem_t;
+typedef struct os_thread os_thread_t;
+typedef struct os_event os_event_t;
+typedef struct os_mbox os_mbox_t;
+typedef struct os_timer os_timer_t;
+typedef uint64_t os_tick_t;
 
 void * os_malloc (size_t size);
 void os_free (void * ptr);

@@ -14,6 +14,7 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "sys/osal_sys.h"
 
 #define URESOLUTION  10
 
@@ -32,22 +33,22 @@ os_mutex_t * os_mutex_create (void)
    CRITICAL_SECTION * handle;
    handle = CreateMutex (NULL, FALSE, NULL);
    CC_ASSERT (handle != INVALID_HANDLE_VALUE);
-   return handle;
+   return (os_mutex_t *)handle;
 }
 
 void os_mutex_lock (os_mutex_t * mutex)
 {
-   WaitForSingleObject (mutex, INFINITE);
+   WaitForSingleObject ((HANDLE)mutex, INFINITE);
 }
 
 void os_mutex_unlock (os_mutex_t * mutex)
 {
-   ReleaseMutex (mutex);
+   ReleaseMutex ((HANDLE)mutex);
 }
 
 void os_mutex_destroy (os_mutex_t * mutex)
 {
-   CloseHandle (mutex);
+   CloseHandle ((HANDLE)mutex);
 }
 
 void os_usleep (uint32_t usec)
@@ -75,7 +76,7 @@ os_thread_t * os_thread_create (
    {
       SetThreadPriority (handle, THREAD_PRIORITY_TIME_CRITICAL);
    }
-   return handle;
+   return (os_thread_t *)handle;
 }
 
 static uint64_t os_get_frequency_tick (void)

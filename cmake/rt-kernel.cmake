@@ -13,28 +13,8 @@
 # full license information.
 #*******************************************************************/
 
-target_sources(osal PRIVATE
-  src/rt-kernel/osal.c
-  src/rt-kernel/osal_log.c
-  )
+add_subdirectory(src/rt-kernel)
 
-target_compile_options(osal
-  PRIVATE
-  -Wall
-  -Wextra
-  -Werror
-  -Wno-unused-parameter
-  )
-
-target_link_libraries(osal
-  kern
-  )
-
-target_include_directories(osal PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/rt-kernel>
-  )
-
-install(FILES
-  src/rt-kernel/sys/osal_sys.h
-  DESTINATION include/sys
-  )
+set (OSAL_DEFAULT_SYSTEM
+  osal-rt-kernel
+  CACHE STRING ${OSAL_DEFAULT_SYSTEM_HELP_STRING})

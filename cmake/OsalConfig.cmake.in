@@ -7,3 +7,11 @@ endif()
 @PACKAGE_INIT@
 
 include ( "${CMAKE_CURRENT_LIST_DIR}/OsalTargets.cmake" )
+
+set (OSAL_DEFAULT_SYSTEM @OSAL_DEFAULT_SYSTEM@ CACHE STRING "@OSAL_DEFAULT_SYSTEM_HELP_STRING@")
+
+if (TARGET ${OSAL_DEFAULT_SYSTEM})
+    add_library (osal ALIAS ${OSAL_DEFAULT_SYSTEM})
+else()
+    message (VERBOSE "Osal default system not available yet")
+endif()

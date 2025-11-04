@@ -14,6 +14,7 @@
 #*******************************************************************/
 
 # Get osal properties
+get_target_property(OSAL_DIR osal SOURCE_DIR)
 get_target_property(OSAL_SOURCES osal SOURCES)
 get_target_property(OSAL_OPTIONS osal COMPILE_OPTIONS)
 get_target_property(OSAL_COMPILE_DEFINITIONS osal COMPILE_DEFINITIONS)
@@ -37,7 +38,7 @@ if (NOT OSAL_LIBS)
 endif()
 
 # Make source paths absolute
-list(TRANSFORM OSAL_SOURCES PREPEND ${OSAL_SOURCE_DIR}/)
+list(TRANSFORM OSAL_SOURCES PREPEND ${OSAL_DIR}/)
 
 set_target_properties (osal_test
   PROPERTIES
@@ -69,7 +70,6 @@ target_compile_options(osal_test
 
 target_include_directories(osal_test
   PRIVATE
-  ${OSAL_SOURCE_DIR}/include
   ${OSAL_INCLUDES}
   )
 

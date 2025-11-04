@@ -15,10 +15,8 @@
 
 #if defined(__rtk__)
 #include "osal_cc_rtk.h"
-#elif defined(__GNUC__) || defined(__GNUG__)
+#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
 #include "osal_cc_gcc.h"
-#elif defined(__clang__)
-#include "osal_cc_clang.h"
 #elif defined(_MSC_VER)
 #include "osal_cc_msvc.h"
 #else

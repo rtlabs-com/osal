@@ -52,49 +52,31 @@ configure_file (
   ${OSAL_BINARY_DIR}/src/version.h
   )
 
-# Add platform-dependent targets early, so they can be configured by
-# platform
-add_library(osal "")
+add_library(osal-interface INTERFACE)
 
-# Suppress certain warnings when building with MSVC
-if (WINDOWS_MONO)
-target_compile_options (osal
-  PRIVATE
-  /wd4820 # padding added
+target_include_directories(osal-interface
+  INTERFACE
+  $<BUILD_INTERFACE:${OSAL_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
   )
-endif()
-
-# Use position independent code if platform supports shared libraries
-get_property(SUPPORTS_SHARED GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
-if (SUPPORTS_SHARED)
-  set_property(TARGET osal PROPERTY POSITION_INDEPENDENT_CODE ON)
-endif()
 
 if (CMAKE_PROJECT_NAME STREQUAL OSAL AND BUILD_TESTING)
   add_executable(osal_test "")
 endif()
 
+# The default system implementation of the OSAL
+# is defined by the build platform, but we provide
+# a common help string here.
+set (OSAL_DEFAULT_SYSTEM_HELP_STRING "The default Osal system implementation to use")
+
 # Platform configuration
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/${CMAKE_SYSTEM_NAME}.cmake)
 
-set_target_properties (osal
-  PROPERTIES
-  C_STANDARD 99
-  )
-
-target_compile_features(osal PUBLIC c_std_99)
-
-target_include_directories(osal
-  PUBLIC
-  $<BUILD_INTERFACE:${OSAL_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  PRIVATE
-  src
-  ${OSAL_BINARY_DIR}/src
-  )
+# Add alias target for the default system
+add_library(osal ALIAS ${OSAL_DEFAULT_SYSTEM})
 
 install(
-  TARGETS osal
+  TARGETS osal-interface
   EXPORT OsalTargets
   )
 
@@ -124,7 +106,6 @@ install(FILES
   )
 
 install(FILES
-  include/sys/osal_cc_clang.h
   include/sys/osal_cc_gcc.h
   include/sys/osal_cc_msvc.h
   include/sys/osal_cc_rtk.h
