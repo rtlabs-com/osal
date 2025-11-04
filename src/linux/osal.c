@@ -16,7 +16,7 @@
 #define _GNU_SOURCE /* For pthread_setname_mp() */
 
 #include "osal.h"
-/* #include "options.h" */
+#include "osal_sys.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -57,7 +57,7 @@ os_thread_t * os_thread_create (
    void * arg)
 {
    int result;
-   pthread_t * thread;
+   os_thread_t * thread;
    pthread_attr_t attr;
 
    thread = malloc (sizeof (*thread));
@@ -74,20 +74,20 @@ os_thread_t * os_thread_create (
    pthread_attr_setschedparam (&attr, &param);
 #endif
 
-   result = pthread_create (thread, &attr, (void *)entry, arg);
+   result = pthread_create (&thread->thread, &attr, (void *)entry, arg);
    CC_ASSERT (result == 0);
 
-   pthread_setname_np (*thread, name);
+   pthread_setname_np (thread->thread, name);
    return thread;
 }
 
 os_mutex_t * os_mutex_create (void)
 {
    int result;
-   pthread_mutex_t * mutex;
+   os_mutex_t * mutex;
    pthread_mutexattr_t mattr;
 
-   mutex = malloc (sizeof (*mutex));
+   mutex = malloc (sizeof (os_mutex_t));
    CC_ASSERT (mutex != NULL);
 
    CC_STATIC_ASSERT (_POSIX_THREAD_PRIO_INHERIT > 0);
@@ -95,28 +95,25 @@ os_mutex_t * os_mutex_create (void)
    pthread_mutexattr_setprotocol (&mattr, PTHREAD_PRIO_INHERIT);
    pthread_mutexattr_settype (&mattr, PTHREAD_MUTEX_RECURSIVE);
 
-   result = pthread_mutex_init (mutex, &mattr);
+   result = pthread_mutex_init (&mutex->mutex, &mattr);
    CC_ASSERT (result == 0);
 
    return mutex;
 }
 
-void os_mutex_lock (os_mutex_t * _mutex)
+void os_mutex_lock (os_mutex_t * mutex)
 {
-   pthread_mutex_t * mutex = _mutex;
-   pthread_mutex_lock (mutex);
+   pthread_mutex_lock (&mutex->mutex);
 }
 
-void os_mutex_unlock (os_mutex_t * _mutex)
+void os_mutex_unlock (os_mutex_t * mutex)
 {
-   pthread_mutex_t * mutex = _mutex;
-   pthread_mutex_unlock (mutex);
+   pthread_mutex_unlock (&mutex->mutex);
 }
 
-void os_mutex_destroy (os_mutex_t * _mutex)
+void os_mutex_destroy (os_mutex_t * mutex)
 {
-   pthread_mutex_t * mutex = _mutex;
-   pthread_mutex_destroy (mutex);
+   pthread_mutex_destroy (&mutex->mutex);
    free (mutex);
 }
 
@@ -571,7 +568,7 @@ void os_timer_stop (os_timer_t * timer)
 void os_timer_destroy (os_timer_t * timer)
 {
    timer->exit = true;
-   pthread_join (*timer->thread, NULL);
+   pthread_join (timer->thread->thread, NULL);
    timer_delete (timer->timerid);
    free (timer);
 }

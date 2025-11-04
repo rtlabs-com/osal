@@ -14,18 +14,30 @@
 # full license information.
 #*******************************************************************/
 
-add_library(mcuxsdk)
-install(TARGETS mcuxsdk EXPORT OsalTargets)
+set(_osal_sys osal-freertos)
+add_library(${_osal_sys})
 
-set(CORE_DIR src/freertos/${BOARD})
-include(MCUXSDK/${BOARD})
+target_include_directories(${_osal_sys} PRIVATE
+  sys
+)
 
-add_subdirectory(src/freertos)
-target_link_libraries(osal-freertos
+target_compile_definitions(${_osal_sys}
+  PUBLIC
+  "OS_MAIN=int _main"
+)
+
+target_sources(${_osal_sys}
   PRIVATE
-  cube
+  osal.c
+  osal_log.c
   )
 
-set (OSAL_DEFAULT_SYSTEM
-  osal-freertos
-  CACHE STRING ${OSAL_DEFAULT_SYSTEM_HELP_STRING})
+target_link_libraries(${_osal_sys}
+  PUBLIC
+  osal-interface
+  )
+
+install(
+  TARGETS ${_osal_sys}
+  EXPORT OsalTargets
+  )

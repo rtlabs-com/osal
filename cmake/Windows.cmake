@@ -13,45 +13,12 @@
 # full license information.
 #*******************************************************************/
 
-target_sources(osal PRIVATE
-  src/windows/osal.c
-  src/windows/osal_log.c
-  )
-
-target_compile_options(osal
-  PRIVATE
-  $<$<C_COMPILER_ID:MSVC>:
-    /W4
-    /WX
-    /wd4100
-    /wd4152
-  >
-
-  $<$<C_COMPILER_ID:GCC>:
-    -Wall
-    -Wextra
-    -Werror
-    -Wno-unused-parameter
-  >
-
-  PUBLIC
-  $<$<C_COMPILER_ID:MSVC>:
-    /wd4200
-  >
-  )
-
-target_link_libraries(osal
-  winmm)
-
-target_include_directories(osal PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/windows>
-  )
-
-install(FILES
-  src/windows/sys/osal_sys.h
-  DESTINATION include/sys
-  )
+add_subdirectory(src/windows)
 
 if (BUILD_TESTING)
   set(GOOGLE_TEST_INDIVIDUAL TRUE)
 endif()
+
+set (OSAL_DEFAULT_SYSTEM
+  osal-windows
+  CACHE STRING ${OSAL_DEFAULT_SYSTEM_HELP_STRING})

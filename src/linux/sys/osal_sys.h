@@ -22,17 +22,15 @@ extern "C" {
 
 #include <pthread.h>
 #include <time.h>
+#include <stdint.h>
 
-#define OS_THREAD
-#define OS_MUTEX
-#define OS_SEM
-#define OS_EVENT
-#define OS_MBOX
-#define OS_TIMER
-#define OS_TICK
+typedef struct os_thread {
+   pthread_t thread;
+} os_thread_t;
 
-typedef pthread_t os_thread_t;
-typedef pthread_mutex_t os_mutex_t;
+typedef struct os_mutex {
+   pthread_mutex_t mutex;
+} os_mutex_t;
 
 typedef struct os_sem
 {

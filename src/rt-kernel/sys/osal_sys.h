@@ -22,22 +22,6 @@ extern "C" {
 
 #include <kern/kern.h>
 
-#define OS_THREAD
-#define OS_MUTEX
-#define OS_SEM
-#define OS_EVENT
-#define OS_MBOX
-#define OS_TIMER
-#define OS_TICK
-
-typedef task_t os_thread_t;
-typedef mtx_t os_mutex_t;
-typedef sem_t os_sem_t;
-typedef flags_t os_event_t;
-typedef mbox_t os_mbox_t;
-typedef tmr_t os_timer_t;
-typedef tick_t os_tick_t;
-
 #ifdef __cplusplus
 }
 #endif

@@ -28,18 +28,7 @@ extern "C" {
 #include <timeapi.h>
 #include <mmsystem.h>
 
-#define OS_WAIT_FOREVER INFINITE
-
-#define OS_THREAD
-#define OS_MUTEX
-#define OS_SEM
-#define OS_EVENT
-#define OS_MBOX
-#define OS_TIMER
-#define OS_TICK
-
-typedef HANDLE os_thread_t;
-typedef CRITICAL_SECTION os_mutex_t;
+CC_STATIC_ASSERT(OS_WAIT_FOREVER == INFINITE);
 
 typedef struct os_sem
 {

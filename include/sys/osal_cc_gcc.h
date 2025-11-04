@@ -22,7 +22,16 @@ extern "C" {
 
 #include <assert.h>
 
-static inline void cc_assert (int exp)
+#ifndef __has_feature
+  #define __has_feature(x) 0
+#endif
+#if __has_feature(attribute_analyzer_noreturn)
+#define CLANG_ANALYZER_NORETURN __attribute__ ((analyzer_noreturn))
+#else
+#define CLANG_ANALYZER_NORETURN
+#endif
+
+static inline void cc_assert (int exp) CLANG_ANALYZER_NORETURN
 {
    assert (exp); // LCOV_EXCL_LINE
 }

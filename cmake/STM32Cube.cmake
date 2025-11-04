@@ -13,31 +13,18 @@
 # full license information.
 #*******************************************************************/
 
-target_sources(osal PRIVATE
-  src/freertos/osal.c
-  src/freertos/osal_log.c
-  )
-
-target_compile_options(osal
-  PRIVATE
-  -Wall
-  -Wextra
-  -Werror
-  -Wno-unused-parameter
-  )
-
-target_include_directories(osal PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/freertos>
-  )
-
-install(FILES
-  src/freertos/sys/osal_sys.h
-  DESTINATION include/sys
-  )
-
 add_library(cube)
-target_link_libraries(osal cube)
 install(TARGETS cube EXPORT OsalTargets)
 
 set(CORE_DIR src/freertos/${BOARD})
 include(STM32Cube/${BOARD})
+
+add_subdirectory(src/freertos)
+target_link_libraries(osal-freertos
+  PRIVATE
+  cube
+  )
+
+set (OSAL_DEFAULT_SYSTEM
+  osal-freertos
+  CACHE STRING ${OSAL_DEFAULT_SYSTEM_HELP_STRING})
