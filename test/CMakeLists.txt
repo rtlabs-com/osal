@@ -16,10 +16,23 @@
 # Get osal properties
 get_target_property(OSAL_SOURCES osal SOURCES)
 get_target_property(OSAL_OPTIONS osal COMPILE_OPTIONS)
+get_target_property(OSAL_COMPILE_DEFINITIONS osal COMPILE_DEFINITIONS)
 get_target_property(OSAL_INCLUDES osal INCLUDE_DIRECTORIES)
 get_target_property(OSAL_LIBS osal LINK_LIBRARIES)
 
-if (OSAL_LIBS STREQUAL "OSAL_LIBS-NOTFOUND")
+if (NOT OSAL_OPTIONS)
+  set(OSAL_OPTIONS "")
+endif()
+
+if (NOT OSAL_COMPILE_DEFINITIONS)
+  set(OSAL_COMPILE_DEFINITIONS "")
+endif()
+
+if (NOT OSAL_INCLUDES)
+  set(OSAL_INCLUDES "")
+endif()
+
+if (NOT OSAL_LIBS)
   set(OSAL_LIBS "")
 endif()
 
@@ -43,9 +56,14 @@ target_sources(osal_test PRIVATE
   osal_test.cpp
   )
 
+target_compile_definitions(osal_test
+  PRIVATE
+  UNIT_TEST
+  ${OSAL_COMPILE_DEFINITIONS}
+  )
+
 target_compile_options(osal_test
   PRIVATE
-  -DUNIT_TEST
   ${OSAL_OPTIONS}
   )
 
