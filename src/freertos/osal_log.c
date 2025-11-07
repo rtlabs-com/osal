@@ -18,7 +18,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-void os_log (uint8_t type, const char * fmt, ...)
+static void os_log_impl (uint8_t type, const char * fmt, ...)
 {
    va_list list;
 
@@ -47,3 +47,5 @@ void os_log (uint8_t type, const char * fmt, ...)
    vprintf (fmt, list);
    va_end (list);
 }
+
+os_log_t os_log = os_log_impl;
