@@ -38,6 +38,7 @@ target_sources(osal_test PRIVATE
 
   # Unit tests
   test_osal.cpp
+  test_osal_utils.cpp
 
   # Testrunner
   osal_test.cpp

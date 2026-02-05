@@ -367,3 +367,8 @@ void os_timer_destroy (os_timer_t * timer)
 {
    free (timer);
 }
+
+void os_exit (os_exit_t code)
+{
+   exit (code);
+}

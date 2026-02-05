@@ -222,3 +222,8 @@ void os_timer_destroy (os_timer_t * timer)
 {
    tmr_destroy (timer);
 }
+
+void os_exit (os_exit_t code)
+{
+   exit (code);
+}

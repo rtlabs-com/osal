@@ -54,7 +54,9 @@ configure_file (
 
 # Add platform-dependent targets early, so they can be configured by
 # platform
-add_library(osal "")
+add_library(osal
+  "src/osal_utils.c"
+)
 
 # Suppress certain warnings when building with MSVC
 if (WINDOWS_MONO)
@@ -120,6 +122,7 @@ install(FILES
 install(FILES
   include/osal.h
   include/osal_log.h
+  include/osal_utils.h
   DESTINATION include
   )
 

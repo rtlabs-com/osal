@@ -80,6 +80,10 @@ typedef void os_timer_t;
 typedef void os_tick_t;
 #endif
 
+#ifndef OS_EXIT
+typedef int os_exit_t;
+#endif
+
 void * os_malloc (size_t size);
 void os_free (void * ptr);
 
@@ -131,6 +135,8 @@ void os_timer_set (os_timer_t * timer, uint32_t us);
 void os_timer_start (os_timer_t * timer);
 void os_timer_stop (os_timer_t * timer);
 void os_timer_destroy (os_timer_t * timer);
+
+void os_exit (os_exit_t code);
 
 #ifdef __cplusplus
 }
