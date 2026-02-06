@@ -14,8 +14,29 @@
  ********************************************************************/
 
 #include "osal.h"
+#include "osal_log.h"
 
-#define URESOLUTION  10
+#ifdef __GNUC__
+#define CC_THREAD_LOCAL __thread
+#elif defined(_MSC_VER)
+#define CC_THREAD_LOCAL __declspec (thread)
+#elif __STDC_VERSION__ >= 201112L
+#define CC_THREAD_LOCAL _Thread_local
+#else
+#error Cannot define CC_THREAD
+#endif
+
+#define SCALE_100NS_PER_S 10000000ULL
+#define SCALE_100NS_PER_US 10ULL
+
+typedef struct os_thread_state
+{
+   HANDLE timer;
+   void (*entry) (void * arg);
+   void * arg;
+} os_thread_state_t;
+
+static CC_THREAD_LOCAL os_thread_state_t * os_thread_state;
 
 void * os_malloc (size_t size)
 {
@@ -50,9 +71,73 @@ void os_mutex_destroy (os_mutex_t * mutex)
    CloseHandle (mutex);
 }
 
+static os_thread_state_t * os_thread_state_init (void (*entry) (void *), void * arg)
+{
+   os_thread_state_t * state =
+      (os_thread_state_t *)calloc (1, sizeof (os_thread_state_t));
+   CC_ASSERT (state != NULL);
+
+   state->entry = entry;
+   state->arg   = arg;
+   state->timer = CreateWaitableTimerExA (
+      NULL,
+      NULL,
+      CREATE_WAITABLE_TIMER_HIGH_RESOLUTION,
+      TIMER_ALL_ACCESS);
+   CC_ASSERT (state->timer != INVALID_HANDLE_VALUE);
+
+   return state;
+}
+
+static os_thread_state_t * os_thread_state_get (void)
+{
+   if (os_thread_state == NULL)
+   {
+      os_thread_state = os_thread_state_init (NULL, NULL);
+   }
+   return os_thread_state;
+}
+
+static void os_thread_state_free (os_thread_state_t * state)
+{
+   CloseHandle (state->timer);
+   free (state);
+}
+
+static void os_internal_sleep (uint64_t delay_100_ns)
+{
+   LARGE_INTEGER ft;
+   BOOL res;
+   DWORD event;
+   os_thread_state_t * state;
+
+   state = os_thread_state_get();
+
+   CC_ASSERT (delay_100_ns < INT64_MAX);
+
+   ft.QuadPart = -(int64_t)delay_100_ns;
+
+   res = SetWaitableTimer (state->timer, &ft, 0, NULL, NULL, FALSE);
+   CC_ASSERT (res);
+
+   event = WaitForSingleObject (state->timer, INFINITE);
+   CC_ASSERT (event == WAIT_OBJECT_0);
+}
+
 void os_usleep (uint32_t usec)
 {
-   Sleep (usec / 1000);
+   os_internal_sleep (SCALE_100NS_PER_US * usec);
+}
+
+static void os_thread_entry (void * arg)
+{
+   os_thread_state_t * state = arg;
+
+   os_thread_state = state;
+   os_thread_state->entry (os_thread_state->arg);
+   os_thread_state = NULL;
+
+   os_thread_state_free (state);
 }
 
 os_thread_t * os_thread_create (
@@ -63,8 +148,16 @@ os_thread_t * os_thread_create (
    void * arg)
 {
    HANDLE handle;
-   handle =
-      CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)entry, (LPVOID)arg, 0, NULL);
+   os_thread_state_t * state;
+
+   state  = os_thread_state_init (entry, arg);
+   handle = CreateThread (
+      NULL,
+      0,
+      (LPTHREAD_START_ROUTINE)os_thread_entry,
+      (LPVOID)state,
+      0,
+      NULL);
    CC_ASSERT (handle != INVALID_HANDLE_VALUE);
 
    if (priority < 5)
@@ -84,7 +177,6 @@ static uint64_t os_get_frequency_tick (void)
    if (frequency == 0)
    {
       LARGE_INTEGER performanceFrequency;
-      timeBeginPeriod (URESOLUTION);
       QueryPerformanceFrequency (&performanceFrequency);
       frequency = performanceFrequency.QuadPart;
    }
@@ -114,7 +206,11 @@ os_tick_t os_tick_from_us (uint32_t us)
 
 void os_tick_sleep (os_tick_t tick)
 {
-   Sleep ((DWORD)(1000u * tick / os_get_frequency_tick()));
+   uint64_t delay;
+   delay = SCALE_100NS_PER_S;
+   delay *= tick;
+   delay /= os_get_frequency_tick();
+   os_internal_sleep (delay);
 }
 
 os_sem_t * os_sem_create (size_t count)
@@ -304,15 +400,30 @@ void os_mbox_destroy (os_mbox_t * mbox)
    free (mbox);
 }
 
-static VOID CALLBACK
-timer_callback (UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
+static VOID CALLBACK timer_thread (void * arg)
 {
-   os_timer_t * timer = (os_timer_t *)dwUser;
+   os_timer_t * timer = (os_timer_t *)arg;
+   BOOL res;
 
-   if (timer->fn)
+   while (timer->run)
    {
-      timer->fn (timer, timer->arg);
+      res = WaitForSingleObject (timer->timer, INFINITE);
+      CC_ASSERT (res == WAIT_OBJECT_0);
+
+      if (!timer->oneshot)
+      {
+         res = SetWaitableTimer (timer->timer, &timer->time, 0, NULL, NULL, 0);
+         CC_ASSERT (res == TRUE);
+      }
+
+      if (timer->fn)
+      {
+         timer->fn (timer, timer->arg);
+      }
    }
+
+   CloseHandle (timer->timer);
+   free (timer);
 }
 
 os_timer_t * os_timer_create (
@@ -323,47 +434,61 @@ os_timer_t * os_timer_create (
 {
    os_timer_t * timer;
 
-   timer = (os_timer_t *)malloc (sizeof (*timer));
+   timer = (os_timer_t *)calloc (1, sizeof (os_timer_t));
 
    timer->fn      = fn;
    timer->arg     = arg;
-   timer->us      = us;
    timer->oneshot = oneshot;
+   timer->run     = true;
+
+   os_timer_set (timer, us);
+
+   timer->timer = CreateWaitableTimerExA (
+      NULL,
+      NULL,
+      CREATE_WAITABLE_TIMER_HIGH_RESOLUTION,
+      TIMER_ALL_ACCESS);
+   CC_ASSERT (timer->timer != INVALID_HANDLE_VALUE);
+
+   HANDLE thread = CreateThread (
+      NULL,
+      0,
+      (LPTHREAD_START_ROUTINE)timer_thread,
+      (LPVOID)timer,
+      0,
+      NULL);
+   CC_ASSERT (thread != INVALID_HANDLE_VALUE);
+
+   SetThreadPriority (thread, THREAD_PRIORITY_TIME_CRITICAL);
+
+   /* Thread will clean itself up,
+      we don't need this handle */
+   CloseHandle (thread);
 
    return timer;
 }
 
 void os_timer_set (os_timer_t * timer, uint32_t us)
 {
-   timer->us = us;
+   uint64_t delay = SCALE_100NS_PER_US * (uint64_t)us;
+   CC_ASSERT (delay < INT64_MAX);
+   timer->time.QuadPart = -(int64_t)(delay);
 }
 
 void os_timer_start (os_timer_t * timer)
 {
-   timeBeginPeriod (URESOLUTION);
-
-   /****************************************************************
-    * N.B. The function timeSetEvent is obsolete.                  *
-    *      The reason for still using it here is that it gives     *
-    *      much better resolution (15 ms -> 1 ms) than when        *
-    *      using the recommended function CreateTimerQueueTimer.   *
-    ****************************************************************/
-   timer->timerID = timeSetEvent (
-      timer->us / 1000,
-      URESOLUTION,
-      timer_callback,
-      (DWORD_PTR)timer,
-      (timer->oneshot) ? TIME_ONESHOT : TIME_PERIODIC);
+   BOOL res;
+   res = SetWaitableTimer (timer->timer, &timer->time, 0, NULL, NULL, FALSE);
+   CC_ASSERT (res == TRUE);
 }
 
 void os_timer_stop (os_timer_t * timer)
 {
-   timeKillEvent (timer->timerID);
-
-   timeEndPeriod (URESOLUTION);
+   CancelWaitableTimer (timer->timer);
 }
 
 void os_timer_destroy (os_timer_t * timer)
 {
-   free (timer);
+   CancelWaitableTimer (timer->timer);
+   timer->run = false;
 }
