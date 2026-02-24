@@ -17,6 +17,7 @@
 #include "osal_sys.h"
 
 #include <stdlib.h>
+#include <portmacro.h>
 
 #define TMO_TO_TICKS(ms) \
    ((ms == OS_WAIT_FOREVER) ? portMAX_DELAY : (ms) / portTICK_PERIOD_MS)
@@ -151,7 +152,21 @@ bool os_event_wait (os_event_t * event, uint32_t mask, uint32_t * value, uint32_
 
 void os_event_set (os_event_t * event, uint32_t value)
 {
-   xEventGroupSetBits ((EventGroupHandle_t)event, value);
+   if (xPortIsInsideInterrupt() == pdTRUE)
+   {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+      xEventGroupSetBitsFromISR (
+         (EventGroupHandle_t)event,
+         value,
+         &xHigherPriorityTaskWoken);
+
+      portYIELD_FROM_ISR (xHigherPriorityTaskWoken);
+   }
+   else
+   {
+      xEventGroupSetBits ((EventGroupHandle_t)event, value);
+   }
 }
 
 void os_event_clr (os_event_t * event, uint32_t value)
