@@ -122,7 +122,19 @@ bool os_sem_wait (os_sem_t * sem, uint32_t time)
 
 void os_sem_signal (os_sem_t * sem)
 {
-   xSemaphoreGive ((SemaphoreHandle_t)sem);
+   if (xPortIsInsideInterrupt() == pdTRUE)
+   {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      xSemaphoreGiveFromISR (
+         (SemaphoreHandle_t)sem,
+         &xHigherPriorityTaskWoken
+      );
+      portYIELD_FROM_ISR (xHigherPriorityTaskWoken);
+   }
+   else
+   {
+      xSemaphoreGive ((SemaphoreHandle_t)sem);
+   }
 }
 
 void os_sem_destroy (os_sem_t * sem)
@@ -198,7 +210,20 @@ bool os_mbox_post (os_mbox_t * mbox, void * msg, uint32_t time)
 {
    BaseType_t success;
 
-   success = xQueueSendToBack ((QueueHandle_t)mbox, &msg, TMO_TO_TICKS (time));
+   if (xPortIsInsideInterrupt())
+   {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      success = xQueueSendToBackFromISR (
+         (QueueHandle_t)mbox,
+         &msg,
+         &xHigherPriorityTaskWoken
+      );
+      portYIELD_FROM_ISR (xHigherPriorityTaskWoken);
+   }
+   else
+   {
+      success = xQueueSendToBack ((QueueHandle_t)mbox, &msg, TMO_TO_TICKS (time));
+   }
    return success != pdTRUE;
 }
 
