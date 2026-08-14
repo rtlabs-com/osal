@@ -110,10 +110,8 @@ install(FILES
   include/sys/osal_cc_msvc.h
   include/sys/osal_cc_rtk.h
   include/sys/osal_cc.h
-  include/osal_log.h
-  DESTINATION include
+  DESTINATION include/sys
   )
-
 
 if (CMAKE_PROJECT_NAME STREQUAL OSAL AND BUILD_TESTING)
   add_subdirectory (test)
