@@ -1,0 +1,4 @@
+name: osal
+build:
+  cmake: ..
+  kconfig: zephyr/Kconfig

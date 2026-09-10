@@ -1,0 +1,25 @@
+config OSAL
+	bool
+	default y
+	select EVENTS
+	select DYNAMIC_THREAD
+	select DYNAMIC_THREAD_ALLOC
+	select THREAD_STACK_INFO
+	select THREAD_NAME
+	help
+	  Hard Kconfig requirements of the Zephyr OSAL backend
+	  (components/osal/src/zephyr/osal.c). These are not
+	  application-specific tunables: osal.c will not compile or behave
+	  correctly on Zephyr without them, so the module selects them
+	  unconditionally instead of relying on every consumer to copy them
+	  into its own prj.conf.
+
+	  CONFIG_LOG is deliberately not selected here: osal_log.c degrades
+	  gracefully to no-ops without it, so whether to enable logging is
+	  left as an application choice.
+
+	  CONFIG_HEAP_MEM_POOL_SIZE and CONFIG_MAIN_STACK_SIZE are also not
+	  set here: how much heap/stack OSAL needs depends on how many
+	  threads/mailboxes/etc. the application creates through it, so
+	  sizing them is an application integration decision, not a fixed
+	  module requirement.
